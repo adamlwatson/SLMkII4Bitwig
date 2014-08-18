@@ -556,3 +556,11 @@ ControlView.prototype.updateButtons = function ()
     // LED indications for device parameters
     this.surface.getMode (this.lastDeviceMode).setLEDs ();
 };
+
+ControlView.prototype.getSelectedSlot = function (track)
+{
+    for (var i = 0; i < track.slots.length; i++)
+        if (track.slots[i].isSelected)
+            return i;
+    return -1;
+};
