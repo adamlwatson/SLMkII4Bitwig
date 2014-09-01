@@ -169,6 +169,11 @@ function SLMkII (output, input)
 }
 SLMkII.prototype = new AbstractControlSurface ();
 
+SLMkII.prototype.setButton = function (button, state)
+{
+    this.output.sendCC (button, state);
+};
+
 SLMkII.prototype.shutdown = function ()
 {
     this.display.clear ();

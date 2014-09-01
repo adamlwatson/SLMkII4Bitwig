@@ -10,8 +10,11 @@ TrackMode.prototype = new AbstractMode ();
 
 TrackMode.prototype.updateDisplay = function ()
 {
-    var t = this.model.getTrackBank ().getSelectedTrack ();
+    var currentTrackBank = this.model.getCurrentTrackBank ();
+    var t = currentTrackBank.getSelectedTrack ();
+    var fxTrackBank = this.model.getEffectTrackBank ();
     var d = this.surface.getDisplay ();
+    var isFX = currentTrackBank === fxTrackBank;
     
     if (t == null)
     {
@@ -27,11 +30,14 @@ TrackMode.prototype.updateDisplay = function ()
 
         for (var i = 0; i < 6; i++)
         {
-            // Note: The Sends name is not send (always "Send")
-            //d.setCell (0, 2 + i, t.sends[i].name, Display.FORMAT_RAW)
-            d.setCell (0, 2 + i, 'Send ' + (i + 1), Display.FORMAT_RAW)
+            var fxTrack = fxTrackBank.getTrack (i);
+            var isEmpty = isFX || !fxTrack.exists;
+            d.setCell (0, 2 + i, isEmpty ? "" : fxTrack.name, Display.FORMAT_RAW)
              .setCell (2, 2 + i, t.sends[i].volumeStr, Display.FORMAT_RAW);
         }
+        
+        if (isFX)
+            d.setCell (0, 7, t.name, Display.FORMAT_RAW)
         d.done (0).done (2);
     }
 };

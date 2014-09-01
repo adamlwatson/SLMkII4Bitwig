@@ -10,7 +10,7 @@ TrackTogglesMode.prototype = new AbstractMode ();
 
 TrackTogglesMode.prototype.updateDisplay = function ()
 {
-    var t = this.model.getTrackBank ().getSelectedTrack ();
+    var t = this.model.getCurrentTrackBank ().getSelectedTrack ();
     var d = this.surface.getDisplay ();
     
     if (t == null)

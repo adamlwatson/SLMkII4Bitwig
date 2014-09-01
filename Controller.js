@@ -98,7 +98,7 @@ Controller.prototype.updateIndication = function (mode)
 {
     var isVolume = mode == MODE_VOLUME;
     
-    var tb = this.model.getTrackBank ();
+    var tb = this.model.getCurrentTrackBank ();
     var selectedTrack = tb.getSelectedTrack ();
     for (var i = 0; i < 8; i++)
     {

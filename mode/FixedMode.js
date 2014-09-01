@@ -14,7 +14,7 @@ FixedMode.prototype.updateDisplay = function ()
 {
     var d = this.surface.getDisplay ();
     d.clearRow (0).setBlock (0, 0, 'New Clip Length:').done (0);
-    var tb = this.model.getTrackBank ();
+    var tb = this.model.getCurrentTrackBank ();
     for (var i = 0; i < 8; i++)
         d.setCell (2, i, (tb.getNewClipLength () == i ? Display.RIGHT_ARROW : ' ') + FixedMode.CLIP_LENGTHS[i]);
     d.done (2);

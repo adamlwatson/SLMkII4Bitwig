@@ -12,7 +12,7 @@ VolumeMode.prototype.updateDisplay = function ()
 {
     var d = this.surface.getDisplay ();
 
-    var tb = this.model.getTrackBank ();
+    var tb = this.model.getCurrentTrackBank ();
     var selTrack = tb.getSelectedTrack ();
     var selIndex = selTrack == null ? -1 : selTrack.index;
 

@@ -6,8 +6,6 @@ function ControlView (model)
 {
     AbstractView.call (this, model);
     
-    this.trackBank = this.model.getTrackBank ();
-
     this.stopPressed = false;
     this.isRewinding = false;
     this.isForwarding = false;
@@ -109,7 +107,7 @@ ControlView.prototype.onButtonRow1 = function (index, event)
         
     if (cm == MODE_FIXED)
     {
-        this.model.getTrackBank ().setNewClipLength (index);
+        this.model.getCurrentTrackBank ().setNewClipLength (index);
         return;
     }
 
@@ -137,7 +135,7 @@ ControlView.prototype.onButtonRow1 = function (index, event)
             
         // New
         case 4:
-            var t = this.trackBank.getSelectedTrack ();
+            var t = this.model.getCurrentTrackBank ().getSelectedTrack ();
             if (t != null)
             {
                 var slotIndex = this.getSelectedSlot (t);
@@ -150,8 +148,8 @@ ControlView.prototype.onButtonRow1 = function (index, event)
                     var s = t.slots[sIndex];
                     if (!s.hasContent)
                     {
-                        var slots = this.trackBank.getClipLauncherSlots (t.index);
-                        slots.createEmptyClip (sIndex, Math.pow (2, this.trackBank.getNewClipLength ()));
+                        var slots = this.model.getCurrentTrackBank ().getClipLauncherSlots (t.index);
+                        slots.createEmptyClip (sIndex, Math.pow (2, this.model.getCurrentTrackBank ().getNewClipLength ()));
                         if (slotIndex != sIndex)
                             slots.select (sIndex);
                         slots.launch (sIndex);
@@ -217,28 +215,28 @@ ControlView.prototype.onButtonRow2 = function (index, event)
     {
         // Mute
         case 0:
-            var track = this.trackBank.getSelectedTrack ();
+            var track = this.model.getCurrentTrackBank ().getSelectedTrack ();
             if (track != null)
-                this.trackBank.toggleMute (track.index);
+                this.model.getCurrentTrackBank ().toggleMute (track.index);
             break;
 
         // Solo
         case 1:
-            var track = this.trackBank.getSelectedTrack ();
+            var track = this.model.getCurrentTrackBank ().getSelectedTrack ();
             if (track != null)
-                this.trackBank.toggleSolo (track.index);
+                this.model.getCurrentTrackBank ().toggleSolo (track.index);
             break;
             
         // Arm
         case 2:
-            var track = this.trackBank.getSelectedTrack ();
+            var track = this.model.getCurrentTrackBank ().getSelectedTrack ();
             if (track != null)
-                this.trackBank.toggleArm (track.index);
+                this.model.getCurrentTrackBank ().toggleArm (track.index);
             break;
             
         // Write
         case 3:
-            var track = this.trackBank.getSelectedTrack ();
+            var track = this.model.getCurrentTrackBank ().getSelectedTrack ();
             if (track != null)
                 this.model.getTransport ().toggleWriteArrangerAutomation ();
             break;
@@ -267,7 +265,7 @@ ControlView.prototype.onButtonRow2 = function (index, event)
 
 ControlView.prototype.onButtonRow3 = function (index, event)
 {
-    this.trackBank.select (index);
+    this.model.getCurrentTrackBank ().select (index);
 };
 
 ControlView.prototype.onButtonRow4 = function (index, event)
@@ -395,23 +393,23 @@ ControlView.prototype.onKnobRow2 = function (index, value)
     {
         // Volume
         case 0:
-            var track = this.trackBank.getSelectedTrack ();
+            var track = this.model.getCurrentTrackBank ().getSelectedTrack ();
             if (track != null)
-                this.trackBank.setVolume (track.index, value);
+                this.model.getCurrentTrackBank ().setVolume (track.index, value);
             break;
 
         // Pan
         case 1:
-            var track = this.trackBank.getSelectedTrack ();
+            var track = this.model.getCurrentTrackBank ().getSelectedTrack ();
             if (track != null)
-                this.trackBank.setPan (track.index, value);
+                this.model.getCurrentTrackBank ().setPan (track.index, value);
             break;
             
         // Send 1 - 6
         default:
-            var track = this.trackBank.getSelectedTrack ();
+            var track = this.model.getCurrentTrackBank ().getSelectedTrack ();
             if (track != null)
-                this.trackBank.setSend (track.index, index - 2, value);
+                this.model.getCurrentTrackBank ().setSend (track.index, index - 2, value);
             break;
     }
 };
@@ -420,7 +418,7 @@ ControlView.prototype.onSlider = function (index, value)
 {
     if (this.surface.getCurrentMode () != MODE_VOLUME)
         this.surface.setPendingMode (MODE_VOLUME);
-    this.trackBank.setVolume (index, value);
+    this.model.getCurrentTrackBank ().setVolume (index, value);
 };
 
 
@@ -458,10 +456,24 @@ ControlView.prototype.onButtonRow2Select = function ()
 
 ControlView.prototype.onKnobRow2Select = function ()
 {
-    if (this.surface.getCurrentMode () == MODE_TRACK)
-        this.surface.setPendingMode (MODE_MASTER);
-    else
-        this.surface.setPendingMode (MODE_TRACK);
+    var isTrackBank = this.model.currentTrackBank === this.model.trackBank;
+
+    switch (this.surface.getCurrentMode ())
+    {
+        case MODE_MASTER:
+            this.surface.setPendingMode (MODE_TRACK);
+            break;
+            
+        case MODE_TRACK:
+            this.model.toggleCurrentTrackBank ();
+            if (!isTrackBank)
+                this.surface.setPendingMode (MODE_MASTER);
+            break;
+            
+        default:
+            this.surface.setPendingMode (MODE_TRACK);
+            break;
+    }
 };
 
 ControlView.prototype.onDrumPadRowSelect = function ()
@@ -476,7 +488,7 @@ ControlView.prototype.onSliderRowSelect = function ()
 
 ControlView.prototype.onButtonRow3Select = function ()
 {
-    this.surface.setPendingMode (MODE_SELECT);
+    // this.surface.setPendingMode (MODE_SELECT);
 };
 
 ControlView.prototype.onButtonRow4Select = function ()
@@ -510,18 +522,18 @@ ControlView.prototype.onButtonP2 = function (isUp, event)
 
     if (isUp)
     {
-        if (!this.trackBank.canScrollTracksDown ())
+        if (!this.model.getCurrentTrackBank ().canScrollTracksDown ())
             return;
-        this.trackBank.scrollTracksPageDown ();
+        this.model.getCurrentTrackBank ().scrollTracksPageDown ();
     }
     else
     {
-        if (!this.trackBank.canScrollTracksUp ())
+        if (!this.model.getCurrentTrackBank ().canScrollTracksUp ())
             return;
-        this.trackBank.scrollTracksPageUp ();
+        this.model.getCurrentTrackBank ().scrollTracksPageUp ();
     }
     this.surface.setPendingMode (this.surface.getPreviousMode ());
-    this.trackBank.select (0);
+    this.model.getCurrentTrackBank ().select (0);
 };
 
 ControlView.prototype.onGridNote = function (note, velocity)
@@ -535,7 +547,7 @@ ControlView.prototype.onGridNote = function (note, velocity)
 
 ControlView.prototype.updateButtons = function ()
 {
-    var track = this.trackBank.getSelectedTrack ();
+    var track = this.model.getCurrentTrackBank ().getSelectedTrack ();
     var cm = this.surface.getCurrentMode ();
     var hasTrack = track != null && cm != MODE_FRAME && cm != MODE_PRESET;
 
@@ -551,7 +563,7 @@ ControlView.prototype.updateButtons = function ()
 
     // Button row 3: Selected track indication
     for (var i = 0; i < 8; i++)
-        this.surface.setButton (MKII_BUTTON_ROW3_1 + i, this.trackBank.getTrack (i).selected ? MKII_BUTTON_STATE_ON : MKII_BUTTON_STATE_OFF);
+        this.surface.setButton (MKII_BUTTON_ROW3_1 + i, this.model.getCurrentTrackBank ().getTrack (i).selected ? MKII_BUTTON_STATE_ON : MKII_BUTTON_STATE_OFF);
         
     // LED indications for device parameters
     this.surface.getMode (this.lastDeviceMode).setLEDs ();
