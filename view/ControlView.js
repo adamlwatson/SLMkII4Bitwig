@@ -389,27 +389,28 @@ ControlView.prototype.onKnobRow2 = function (index, value)
         return;
     }
         
+    var tb = this.model.getCurrentTrackBank ();
     switch (index)
     {
         // Volume
         case 0:
-            var track = this.model.getCurrentTrackBank ().getSelectedTrack ();
+            var track = tb.getSelectedTrack ();
             if (track != null)
-                this.model.getCurrentTrackBank ().setVolume (track.index, value);
+                tb.setVolume (track.index, value);
             break;
 
         // Pan
         case 1:
-            var track = this.model.getCurrentTrackBank ().getSelectedTrack ();
+            var track = tb.getSelectedTrack ();
             if (track != null)
-                this.model.getCurrentTrackBank ().setPan (track.index, value);
+                tb.setPan (track.index, value);
             break;
             
         // Send 1 - 6
         default:
-            var track = this.model.getCurrentTrackBank ().getSelectedTrack ();
+            var track = tb.getSelectedTrack ();
             if (track != null)
-                this.model.getCurrentTrackBank ().setSend (track.index, index - 2, value);
+                tb.setSend (track.index, index - 2, value);
             break;
     }
 };
