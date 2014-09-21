@@ -135,21 +135,20 @@ ControlView.prototype.onButtonRow1 = function (index, event)
             
         // New
         case 4:
-            var t = this.model.getCurrentTrackBank ().getSelectedTrack ();
+            var tb = this.model.getCurrentTrackBank ();
+            var t = tb.getSelectedTrack ();
             if (t != null)
             {
-                var slotIndex = this.getSelectedSlot (t);
-                if (slotIndex == -1)
-                    slotIndex = 0;
-                    
+                var slotIndexes = tb.getSelectedSlots (t.index);
+                var slotIndex = slotIndexes.length == 0 ? 0 : slotIndexes[0].index;
                 for (var i = 0; i < 8; i++)
                 {
                     var sIndex = (slotIndex + i) % 8;
                     var s = t.slots[sIndex];
                     if (!s.hasContent)
                     {
-                        var slots = this.model.getCurrentTrackBank ().getClipLauncherSlots (t.index);
-                        slots.createEmptyClip (sIndex, Math.pow (2, this.model.getCurrentTrackBank ().getNewClipLength ()));
+                        var slots = tb.getClipLauncherSlots (t.index);
+                        slots.createEmptyClip (sIndex, Math.pow (2, tb.getNewClipLength ()));
                         if (slotIndex != sIndex)
                             slots.select (sIndex);
                         slots.launch (sIndex);
@@ -568,12 +567,4 @@ ControlView.prototype.updateButtons = function ()
         
     // LED indications for device parameters
     this.surface.getMode (this.lastDeviceMode).setLEDs ();
-};
-
-ControlView.prototype.getSelectedSlot = function (track)
-{
-    for (var i = 0; i < track.slots.length; i++)
-        if (track.slots[i].isSelected)
-            return i;
-    return -1;
 };

@@ -33,7 +33,7 @@ TrackMode.prototype.updateDisplay = function ()
             var fxTrack = fxTrackBank.getTrack (i);
             var isEmpty = isFX || !fxTrack.exists;
             d.setCell (0, 2 + i, isEmpty ? "" : fxTrack.name, Display.FORMAT_RAW)
-             .setCell (2, 2 + i, t.sends[i].volumeStr, Display.FORMAT_RAW);
+             .setCell (2, 2 + i, t.sends[i] ? t.sends[i].volumeStr : "", Display.FORMAT_RAW);
         }
         
         if (isFX)
