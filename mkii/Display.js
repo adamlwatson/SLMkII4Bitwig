@@ -61,7 +61,7 @@ Display.prototype.writeLine = function (row, text)
     for (var i = 0; i < text.length; i++)
         array[i] = text.charCodeAt(i);
     this.output.sendSysex (SLMkII.SYSEX_HEADER + "02 01 00" + uint7ToHex (row + 1) + "04" + toHexStr (array) + " 00 F7");
-}
+};
 
 Display.prototype.formatStr = function (value, format)
 {

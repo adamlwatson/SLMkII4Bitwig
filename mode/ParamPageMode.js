@@ -106,7 +106,7 @@ ParamPageMode.prototype.updateDisplay = function ()
             else
             {
                 d.setCell (0, i, this.params[i].name, Display.FORMAT_RAW)
-                 .setCell (2, i, this.params[i].valueStr, Display.FORMAT_RAW)
+                 .setCell (2, i, this.params[i].valueStr, Display.FORMAT_RAW);
             }
         }
     }

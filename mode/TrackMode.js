@@ -37,7 +37,7 @@ TrackMode.prototype.updateDisplay = function ()
         }
         
         if (isFX)
-            d.setCell (0, 7, t.name, Display.FORMAT_RAW)
+            d.setCell (0, 7, t.name, Display.FORMAT_RAW);
         d.done (0).done (2);
     }
 };
