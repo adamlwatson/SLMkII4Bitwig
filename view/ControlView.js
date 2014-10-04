@@ -389,27 +389,29 @@ ControlView.prototype.onKnobRow2 = function (index, value)
     }
         
     var tb = this.model.getCurrentTrackBank ();
+    var track = tb.getSelectedTrack ();
+    if (track == null)
+        return;
+
     switch (index)
     {
         // Volume
         case 0:
-            var track = tb.getSelectedTrack ();
-            if (track != null)
-                tb.setVolume (track.index, value);
+            tb.setVolume (track.index, value);
             break;
 
         // Pan
         case 1:
-            var track = tb.getSelectedTrack ();
-            if (track != null)
-                tb.setPan (track.index, value);
+            tb.setPan (track.index, value);
             break;
             
-        // Send 1 - 6
+        case 2:
+            tb.setCrossfadeModeAsNumber (track.index, value == 0 ? 0 : (value == 127 ? 2 : 1));
+            break;
+            
+        // Send 1 - 5
         default:
-            var track = tb.getSelectedTrack ();
-            if (track != null)
-                tb.setSend (track.index, index - 2, value);
+            tb.setSend (track.index, index - 3, value);
             break;
     }
 };
@@ -539,6 +541,48 @@ ControlView.prototype.onButtonP2 = function (isUp, event)
 ControlView.prototype.onGridNote = function (note, velocity)
 {
     this.surface.sendMidiEvent (0x90, note, velocity);
+};
+
+//--------------------------------------
+// Touchpad
+//--------------------------------------
+
+ControlView.prototype.onTouchpadX = function (value)
+{
+    switch (Config.touchpadMode)
+    {
+        case Config.TOUCHPAD_MODE_PRECONFIGURED:
+            // TODO FIX - Requires direct parameters which is currently broken
+            break;
+        case Config.TOUCHPAD_MODE_CROSSFADER:
+            this.model.getTransport ().setCrossfade (value);
+            break;
+        case Config.TOUCHPAD_MODE_CCS:
+            this.model.getUserControlBank ().getControl (0).set (value, Config.maxParameterValue);
+            break;
+        case Config.TOUCHPAD_MODE_MACRO:
+            this.model.getCursorDevice ().getMacro (0).getAmount ().set (value, Config.maxParameterValue);
+            break;
+    }
+};
+
+ControlView.prototype.onTouchpadY = function (value)
+{
+    switch (Config.touchpadMode)
+    {
+        case Config.TOUCHPAD_MODE_PRECONFIGURED:
+            // TODO FIX - Requires direct parameters which is currently broken
+            break;
+        case Config.TOUCHPAD_MODE_CROSSFADER:
+            // Crossfade only in X direction
+            break;
+        case Config.TOUCHPAD_MODE_CCS:
+            this.model.getUserControlBank ().getControl (1).set (value, Config.maxParameterValue);
+            break;
+        case Config.TOUCHPAD_MODE_MACRO:
+            this.model.getCursorDevice ().getMacro (1).getAmount ().set (value, Config.maxParameterValue);
+            break;
+    }
 };
 
 //--------------------------------------

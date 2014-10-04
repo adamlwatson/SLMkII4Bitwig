@@ -5,30 +5,6 @@
 var MKII_BUTTON_STATE_OFF = 0;
 var MKII_BUTTON_STATE_ON  = 1;
 
-var MKII_BUTTON_ROW1_1    = 24;
-var MKII_BUTTON_ROW1_2    = 25;
-var MKII_BUTTON_ROW1_3    = 26;
-var MKII_BUTTON_ROW1_4    = 27;
-var MKII_BUTTON_ROW1_5    = 28;
-var MKII_BUTTON_ROW1_6    = 29;
-var MKII_BUTTON_ROW1_7    = 30;
-var MKII_BUTTON_ROW1_8    = 31;
-var MKII_KNOB_ROW1_1      = 56;
-var MKII_KNOB_ROW1_2      = 57;
-var MKII_KNOB_ROW1_3      = 58;
-var MKII_KNOB_ROW1_4      = 59;
-var MKII_KNOB_ROW1_5      = 60;
-var MKII_KNOB_ROW1_6      = 61;
-var MKII_KNOB_ROW1_7      = 62;
-var MKII_KNOB_ROW1_8      = 63;
-var MKII_BUTTON_ROW2_1    = 32;
-var MKII_BUTTON_ROW2_2    = 33;
-var MKII_BUTTON_ROW2_3    = 34;
-var MKII_BUTTON_ROW2_4    = 35;
-var MKII_BUTTON_ROW2_5    = 36;
-var MKII_BUTTON_ROW2_6    = 37;
-var MKII_BUTTON_ROW2_7    = 38;
-var MKII_BUTTON_ROW2_8    = 39;
 var MKII_KNOB_ROW2_1      =  8;
 var MKII_KNOB_ROW2_2      =  9;
 var MKII_KNOB_ROW2_3      = 10;
@@ -45,6 +21,22 @@ var MKII_SLIDER5          = 20;
 var MKII_SLIDER6          = 21;
 var MKII_SLIDER7          = 22;
 var MKII_SLIDER8          = 23;
+var MKII_BUTTON_ROW1_1    = 24;
+var MKII_BUTTON_ROW1_2    = 25;
+var MKII_BUTTON_ROW1_3    = 26;
+var MKII_BUTTON_ROW1_4    = 27;
+var MKII_BUTTON_ROW1_5    = 28;
+var MKII_BUTTON_ROW1_6    = 29;
+var MKII_BUTTON_ROW1_7    = 30;
+var MKII_BUTTON_ROW1_8    = 31;
+var MKII_BUTTON_ROW2_1    = 32;
+var MKII_BUTTON_ROW2_2    = 33;
+var MKII_BUTTON_ROW2_3    = 34;
+var MKII_BUTTON_ROW2_4    = 35;
+var MKII_BUTTON_ROW2_5    = 36;
+var MKII_BUTTON_ROW2_6    = 37;
+var MKII_BUTTON_ROW2_7    = 38;
+var MKII_BUTTON_ROW2_8    = 39;
 var MKII_BUTTON_ROW3_1    = 40;
 var MKII_BUTTON_ROW3_2    = 41;
 var MKII_BUTTON_ROW3_3    = 42;
@@ -61,15 +53,23 @@ var MKII_BUTTON_ROW4_5    = 52;
 var MKII_BUTTON_ROW4_6    = 53;
 var MKII_BUTTON_ROW4_7    = 54;
 var MKII_BUTTON_ROW4_8    = 55;
+var MKII_KNOB_ROW1_1      = 56;
+var MKII_KNOB_ROW1_2      = 57;
+var MKII_KNOB_ROW1_3      = 58;
+var MKII_KNOB_ROW1_4      = 59;
+var MKII_KNOB_ROW1_5      = 60;
+var MKII_KNOB_ROW1_6      = 61;
+var MKII_KNOB_ROW1_7      = 62;
+var MKII_KNOB_ROW1_8      = 63;
+var MKII_TOUCHPAD_X       = 68;
+var MKII_TOUCHPAD_Y       = 69;
 var MKII_BUTTON_REWIND    = 72;
 var MKII_BUTTON_FORWARD   = 73;
 var MKII_BUTTON_STOP      = 74;
 var MKII_BUTTON_PLAY      = 75;
 var MKII_BUTTON_RECORD    = 76;
 var MKII_BUTTON_LOOP      = 77;
-
 var MKII_BUTTON_TRANSPORT = 79;
-
 var MKII_BUTTON_ROWSEL1   = 80;
 var MKII_BUTTON_ROWSEL2   = 81;
 var MKII_BUTTON_ROWSEL3   = 82;
@@ -78,7 +78,6 @@ var MKII_BUTTON_ROWSEL5   = 84;
 var MKII_BUTTON_ROWSEL6   = 85;
 var MKII_BUTTON_ROWSEL7   = 86;
 var MKII_BUTTON_ROWSEL8   = 87;
-
 var MKII_BUTTON_P1_UP     = 88;
 var MKII_BUTTON_P1_DOWN   = 89;
 var MKII_BUTTON_P2_UP     = 90;
@@ -389,11 +388,26 @@ SLMkII.prototype.handleEvent = function (cc, value)
             view.onLoop (event);
             break;
             
+        //////////////////////////
         // On-/Offline
+        //////////////////////////
+        
         case 0x6B:
             // Not used
             break;
-    
+
+        //////////////////////////
+        // Touchpad
+        //////////////////////////
+        
+        case MKII_TOUCHPAD_X:
+            view.onTouchpadX (value);
+            break;
+
+        case MKII_TOUCHPAD_Y:
+            view.onTouchpadY (value);
+            break;
+            
         default:
             println ("Unused Midi CC: " + cc);
             break;

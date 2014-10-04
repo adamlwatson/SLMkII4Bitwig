@@ -4,6 +4,8 @@
 
 function Controller ()
 {
+    Config.init ();
+
     var output = new MidiOutput ();
     var input = new MkIIMidiInput ();
     input.init ();

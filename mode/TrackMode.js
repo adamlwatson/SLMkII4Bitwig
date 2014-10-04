@@ -26,14 +26,16 @@ TrackMode.prototype.updateDisplay = function ()
         d.setCell (0, 0, "Volume", Display.FORMAT_RAW)
          .setCell (2, 0, t.volumeStr, Display.FORMAT_RAW)
          .setCell (0, 1, "Pan", Display.FORMAT_RAW)
-         .setCell (2, 1, t.panStr, Display.FORMAT_RAW);
+         .setCell (2, 1, t.panStr, Display.FORMAT_RAW)
+         .setCell (0, 2, "Crossfdr", Display.FORMAT_RAW)
+         .setCell (2, 2, t.crossfadeMode == 'A' ? 'A' : (t.crossfadeMode == 'B' ? '       B' : '   <> '), Display.FORMAT_RAW);
 
-        for (var i = 0; i < 6; i++)
+        for (var i = 0; i < 5; i++)
         {
             var fxTrack = fxTrackBank.getTrack (i);
             var isEmpty = isFX || !fxTrack.exists;
-            d.setCell (0, 2 + i, isEmpty ? "" : fxTrack.name, Display.FORMAT_RAW)
-             .setCell (2, 2 + i, t.sends[i] ? t.sends[i].volumeStr : "", Display.FORMAT_RAW);
+            d.setCell (0, 3 + i, isEmpty ? "" : fxTrack.name, Display.FORMAT_RAW)
+             .setCell (2, 3 + i, t.sends[i] ? t.sends[i].volumeStr : "", Display.FORMAT_RAW);
         }
         
         if (isFX)
