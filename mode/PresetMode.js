@@ -33,15 +33,25 @@ PresetMode.prototype.updateDisplay = function ()
             d.setBlock (2, 1, '  ' + value);
     }
     
-    var view = cd.creatorProvider.getView (2);
+    view = cd.creatorProvider.getView (2);
     for (var i = 0; i < 2; i++)
     {
-        var value = (view[i] != null) ? view[i] : "";
+        var value = view[i] != null ? view[i] : "";
         if (i == 0)
             d.setBlock (0, 2, ' ' + Display.RIGHT_ARROW + value);
         else
             d.setBlock (2, 2, '  ' + value);
     }
+    
+    view = cd.presetProvider.getView (2);
+    for (var i = 0; i < 2; i++)
+    {
+        var value = view[i] != null ? view[i] : "";
+        if (i == 0)
+            d.setBlock (0, 3, ' ' + Display.RIGHT_ARROW + value);
+        else
+            d.setBlock (2, 3, '  ' + value);
+    }
 
-    d.clearColumn (3).setBlock (0, 3, ' ' + Display.RIGHT_ARROW + cd.getCurrentPreset ()).allDone ();
+    d.allDone ();
 };
