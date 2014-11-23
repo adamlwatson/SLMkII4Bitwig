@@ -16,7 +16,13 @@ MkIIMidiInputKeys.prototype.init = function ()
 
 MkIIMidiInputKeys.prototype.createNoteInput = function ()
 {
-    var noteInput = this.port.createNoteInput ("Novation SL MkII", "80????", "90????", "E0????" /* Pitchbend */, "B0????" /* Sustainpedal */);
+    var noteInput = this.port.createNoteInput ("Novation SL MkII", 
+                                               "80????", 
+                                               "90????", 
+                                               "B0????",  // CCs
+                                               "D0????",  // Channel Aftertouch
+                                               "E0????"   // Pitchbend
+                                               );
     noteInput.setShouldConsumeEvents (false);
     return noteInput;
 };
