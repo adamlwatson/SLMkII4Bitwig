@@ -8,7 +8,6 @@ function Controller ()
 
     var output = new MidiOutput ();
     var input = new MkIIMidiInput ();
-    input.init ();
     this.keysInput = new MkIIMidiInputKeys ();
     this.keysInput.init ();
     this.keysNoteInput = this.keysInput.createNoteInput ();
@@ -98,6 +97,10 @@ Controller.prototype.updateMode = function (mode)
 
 Controller.prototype.updateIndication = function (mode)
 {
+    var mt = this.model.getMasterTrack ();
+    mt.setVolumeIndication (mode == MODE_MASTER);
+    mt.setPanIndication (mode == MODE_MASTER);
+
     var isVolume = mode == MODE_VOLUME;
     
     var tb = this.model.getCurrentTrackBank ();
@@ -118,9 +121,5 @@ Controller.prototype.updateIndication = function (mode)
 
         var uc = this.model.getUserControlBank ();
         uc.getControl (i).setIndication (mode == MODE_BANK_USER);
-
-        var mt = this.model.getMasterTrack ();
-        mt.setVolumeIndication (mode == MODE_MASTER);
-        mt.setPanIndication (mode == MODE_MASTER);
     }
 };
