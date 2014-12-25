@@ -214,30 +214,31 @@ ControlView.prototype.onButtonRow2 = function (index, event)
     {
         // Mute
         case 0:
-            var track = this.model.getCurrentTrackBank ().getSelectedTrack ();
+            var tb = this.model.getCurrentTrackBank ();
+            var track = tb.getSelectedTrack ();
             if (track != null)
-                this.model.getCurrentTrackBank ().toggleMute (track.index);
+                tb.toggleMute (track.index);
             break;
 
         // Solo
         case 1:
-            var track = this.model.getCurrentTrackBank ().getSelectedTrack ();
+            var tb = this.model.getCurrentTrackBank ();
+            var track = tb.getSelectedTrack ();
             if (track != null)
-                this.model.getCurrentTrackBank ().toggleSolo (track.index);
+                tb.toggleSolo (track.index);
             break;
             
         // Arm
         case 2:
-            var track = this.model.getCurrentTrackBank ().getSelectedTrack ();
+            var tb = this.model.getCurrentTrackBank ();
+            var track = tb.getSelectedTrack ();
             if (track != null)
-                this.model.getCurrentTrackBank ().toggleArm (track.index);
+                tb.toggleArm (track.index);
             break;
             
         // Write
         case 3:
-            var track = this.model.getCurrentTrackBank ().getSelectedTrack ();
-            if (track != null)
-                this.model.getTransport ().toggleWriteArrangerAutomation ();
+            this.model.getTransport ().toggleWriteArrangerAutomation ();
             break;
             
         // Browse
@@ -600,7 +601,7 @@ ControlView.prototype.updateButtons = function ()
     this.surface.setButton (MKII_BUTTON_ROW2_1, hasTrack && track.mute ? MKII_BUTTON_STATE_ON : MKII_BUTTON_STATE_OFF);
     this.surface.setButton (MKII_BUTTON_ROW2_2, hasTrack && track.solo ? MKII_BUTTON_STATE_ON : MKII_BUTTON_STATE_OFF);
     this.surface.setButton (MKII_BUTTON_ROW2_3, hasTrack && track.recarm ? MKII_BUTTON_STATE_ON : MKII_BUTTON_STATE_OFF);
-    this.surface.setButton (MKII_BUTTON_ROW2_4, hasTrack && track.autowrite ? MKII_BUTTON_STATE_ON : MKII_BUTTON_STATE_OFF);
+    this.surface.setButton (MKII_BUTTON_ROW2_4, this.model.getTransport ().isWritingArrangerAutomation ? MKII_BUTTON_STATE_ON : MKII_BUTTON_STATE_OFF);
     this.surface.setButton (MKII_BUTTON_ROW2_5, MKII_BUTTON_STATE_OFF);
     this.surface.setButton (MKII_BUTTON_ROW2_6, MKII_BUTTON_STATE_OFF);
     this.surface.setButton (MKII_BUTTON_ROW2_7, MKII_BUTTON_STATE_OFF);
