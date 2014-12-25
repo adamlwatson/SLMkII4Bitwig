@@ -191,7 +191,7 @@ ControlView.prototype.onButtonRow2 = function (index, event)
         
     if (cm == MODE_FRAME)
     {
-        this.surface.getMode (cm).executeCommand (index);
+        this.surface.getMode (MODE_FRAME).executeCommand (index);
         return;
     }
     else if (cm == MODE_PRESET)
@@ -522,20 +522,21 @@ ControlView.prototype.onButtonP2 = function (isUp, event)
     if (!event.isDown ())
         return;
 
+    var tb = this.model.getCurrentTrackBank ();
     if (isUp)
     {
-        if (!this.model.getCurrentTrackBank ().canScrollTracksDown ())
+        if (!tb.canScrollTracksDown ())
             return;
-        this.model.getCurrentTrackBank ().scrollTracksPageDown ();
+        tb.scrollTracksPageDown ();
     }
     else
     {
-        if (!this.model.getCurrentTrackBank ().canScrollTracksUp ())
+        if (!tb.canScrollTracksUp ())
             return;
-        this.model.getCurrentTrackBank ().scrollTracksPageUp ();
+        tb.scrollTracksPageUp ();
     }
     this.surface.setPendingMode (this.surface.getPreviousMode ());
-    this.model.getCurrentTrackBank ().select (0);
+    tb.select (0);
 };
 
 ControlView.prototype.onGridNote = function (note, velocity)
