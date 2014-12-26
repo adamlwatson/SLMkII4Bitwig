@@ -12,22 +12,31 @@ var MODE_MASTER              = 5;
 var MODE_FIXED               = 6;
 var MODE_FRAME               = 7;
 
-var MODE_BANK_DEVICE         = 21;
-var MODE_BANK_COMMON         = 22;
-var MODE_BANK_ENVELOPE       = 23;
-var MODE_BANK_MODULATE       = 24;
-var MODE_BANK_USER           = 25;
-var MODE_BANK_MACRO          = 26;
-var MODE_PRESET              = 27;
+var MODE_DEVICE_PARAMS       = 10;
+var MODE_DEVICE_COMMON       = 11;
+var MODE_DEVICE_ENVELOPE     = 12;
+var MODE_DEVICE_MODULATE     = 13;
+var MODE_DEVICE_USER         = 14;
+var MODE_DEVICE_MACRO        = 15;
+var MODE_DEVICE_DIRECT       = 16;
 
+var MODE_DEVICE_PRESETS      = 17;
 
 load ("TrackMode.js");
 load ("TrackTogglesMode.js");
 load ("VolumeMode.js");
 load ("FunctionMode.js");
-load ("DeviceMode.js");
-load ("ParamPageMode.js");
 load ("FixedMode.js");
 load ("MasterMode.js");
 load ("FrameMode.js");
-load ("PresetMode.js");
+
+load ("device/AbstractDeviceMode.js");
+load ("device/AbstractDeviceFixedMode.js");
+load ("device/DeviceCommonMode.js");
+load ("device/DeviceDirectMode.js");
+load ("device/DeviceEnvelopeMode.js");
+load ("device/DeviceMacroMode.js");
+load ("device/DeviceModulationMode.js");
+load ("device/DeviceParamsMode.js");
+load ("device/DeviceUserMode.js");
+load ("device/DevicePresetsMode.js");

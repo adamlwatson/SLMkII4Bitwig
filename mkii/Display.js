@@ -39,7 +39,7 @@ Display.prototype.setBlock = function (row, block, value)
     if (value.length > 9)
     {
         this.cells[row * 8 + cell]     = value.substr (0, 9);
-        this.cells[row * 8 + cell + 1] = this.pad (value.substring (9), 8, ' ');
+        this.cells[row * 8 + cell + 1] = this.pad (value.substring (9), 8, ' ') + ' ';
     }
     else
     {
@@ -51,7 +51,7 @@ Display.prototype.setBlock = function (row, block, value)
 
 Display.prototype.setCell = function (row, cell, value, format)
 {
-    this.cells[row * this.noOfCells + cell] = this.pad (this.formatStr (value, format), 9, ' ');
+    this.cells[row * this.noOfCells + cell] = this.pad (this.formatStr (value, format), 8, ' ') + ' ';
     return this;
 };
 

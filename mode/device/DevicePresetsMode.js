@@ -1,15 +1,14 @@
 // Written by Jürgen Moßgraber - mossgrabers.de
-//            Michael Schmalle - teotigraphix.com
 // (c) 2014
 // Licensed under LGPLv3 - http://www.gnu.org/licenses/lgpl-3.0.txt
 
-function PresetMode (model)
+function DevicePresetsMode (model)
 {
     AbstractMode.call (this, model);
 }
-PresetMode.prototype = new AbstractMode ();
+DevicePresetsMode.prototype = new AbstractMode ();
 
-PresetMode.prototype.updateDisplay = function ()
+DevicePresetsMode.prototype.updateDisplay = function ()
 {
     var d = this.surface.getDisplay ();
 
@@ -21,7 +20,7 @@ PresetMode.prototype.updateDisplay = function ()
 
     d.clearRow (0).setCell (0, 0, "Device:")
      .setBlock (2, 0, this.model.getSelectedDevice ().name);
-    
+
     var cd = this.model.getCursorDevice ();
     var view = cd.categoryProvider.getView (2);
     for (var i = 0; i < 2; i++)

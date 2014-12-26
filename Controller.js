@@ -32,16 +32,19 @@ function Controller ()
     this.surface.addMode (MODE_SELECT, volumeMode);
     this.surface.addMode (MODE_TRACK_TOGGLES, new TrackTogglesMode (this.model));
     this.surface.addMode (MODE_FUNCTIONS, new FunctionMode (this.model));
-    this.surface.addMode (MODE_BANK_DEVICE, new DeviceMode (this.model));
-    this.surface.addMode (MODE_BANK_COMMON, new ParamPageMode (this.model, MODE_BANK_COMMON, 'Common'));
-    this.surface.addMode (MODE_BANK_ENVELOPE, new ParamPageMode (this.model, MODE_BANK_ENVELOPE, 'Envelope'));
-    this.surface.addMode (MODE_BANK_MODULATE, new ParamPageMode (this.model, MODE_BANK_MODULATE, 'Modulate'));
-    this.surface.addMode (MODE_BANK_USER, new ParamPageMode (this.model, MODE_BANK_USER, 'User'));
-    this.surface.addMode (MODE_BANK_MACRO, new ParamPageMode (this.model, MODE_BANK_MACRO, 'Macro'));
     this.surface.addMode (MODE_FIXED, new FixedMode (this.model));
     this.surface.addMode (MODE_MASTER, new MasterMode (this.model));
     this.surface.addMode (MODE_FRAME, new FrameMode (this.model));
-    this.surface.addMode (MODE_PRESET, new PresetMode (this.model));
+    
+    this.surface.addMode (MODE_DEVICE_PARAMS, new DeviceParamsMode (this.model));
+    this.surface.addMode (MODE_DEVICE_COMMON, new DeviceCommonMode (this.model));
+    this.surface.addMode (MODE_DEVICE_ENVELOPE, new DeviceEnvelopeMode (this.model));
+    this.surface.addMode (MODE_DEVICE_MACRO, new DeviceMacroMode (this.model));
+    this.surface.addMode (MODE_DEVICE_MODULATE, new DeviceModulationMode (this.model));
+    this.surface.addMode (MODE_DEVICE_USER, new DeviceUserMode (this.model));
+    this.surface.addMode (MODE_DEVICE_DIRECT, new DeviceDirectMode (this.model, MODE_DEVICE_DIRECT, 'Direct'));
+    this.surface.addMode (MODE_DEVICE_PRESETS, new DevicePresetsMode (this.model));
+    
 
     this.surface.addModeListener (doObject (this, function (oldMode, newMode)
     {
@@ -55,7 +58,7 @@ function Controller ()
     
     // Initialise all modes
     this.surface.setActiveMode (MODE_VOLUME);
-    this.surface.setActiveMode (MODE_BANK_DEVICE);
+    this.surface.setActiveMode (MODE_DEVICE_PARAMS);
     this.surface.setActiveMode (MODE_TRACK);
 }
 Controller.prototype = new AbstractController ();
@@ -82,8 +85,8 @@ Controller.prototype.updateMode = function (mode)
     var isMaster       = mode == MODE_MASTER;
     var isFixed        = mode == MODE_FIXED;
     var isFrame        = mode == MODE_FRAME;
-    var isPreset       = mode == MODE_PRESET;
-    var isDevice       = mode >= MODE_BANK_DEVICE && mode <= MODE_BANK_MACRO;
+    var isPreset       = mode == MODE_DEVICE_PRESETS;
+    var isDevice       = mode >= MODE_DEVICE_PARAMS && mode <= MODE_DEVICE_DIRECT;
 
     this.updateIndication (mode);
 
@@ -114,12 +117,12 @@ Controller.prototype.updateIndication = function (mode)
             tb.setSendIndication (i, j, hasTrackSel);
 
         var cd = this.model.getCursorDevice ();
-        cd.getParameter (i).setIndication (mode == MODE_BANK_DEVICE);
-        cd.getCommonParameter (i).setIndication (mode == MODE_BANK_COMMON);
-        cd.getEnvelopeParameter (i).setIndication (mode == MODE_BANK_ENVELOPE);
-        cd.getMacro (i).getAmount ().setIndication (mode == MODE_BANK_MACRO);
+        cd.getParameter (i).setIndication (mode == MODE_DEVICE_PARAMS);
+        cd.getCommonParameter (i).setIndication (mode == MODE_DEVICE_COMMON);
+        cd.getEnvelopeParameter (i).setIndication (mode == MODE_DEVICE_ENVELOPE);
+        cd.getMacro (i).getAmount ().setIndication (mode == MODE_DEVICE_MACRO);
 
         var uc = this.model.getUserControlBank ();
-        uc.getControl (i).setIndication (mode == MODE_BANK_USER);
+        uc.getControl (i).setIndication (mode == MODE_DEVICE_USER);
     }
 };

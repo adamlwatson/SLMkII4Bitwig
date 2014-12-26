@@ -12,7 +12,8 @@ function ControlView (model)
     this.isTempoInc = false;
     this.isTempoDec = false;
     
-    this.lastDeviceMode = MODE_BANK_DEVICE;
+    this.currentDeviceMode = MODE_DEVICE_PARAMS;
+    this.isMasterMode = false;
 }
 ControlView.prototype = new AbstractView ();
 ControlView.prototype.constructor = ControlView;
@@ -183,7 +184,7 @@ ControlView.prototype.onButtonRow2 = function (index, event)
         return;
 
     var cm = this.surface.getCurrentMode ();
-    if (cm != MODE_TRACK_TOGGLES && cm != MODE_FRAME && cm != MODE_PRESET)
+    if (cm != MODE_TRACK_TOGGLES && cm != MODE_FRAME && cm != MODE_DEVICE_PRESETS)
     {
         this.surface.setPendingMode (MODE_TRACK_TOGGLES);
         cm = MODE_TRACK_TOGGLES;
@@ -194,7 +195,7 @@ ControlView.prototype.onButtonRow2 = function (index, event)
         this.surface.getMode (MODE_FRAME).executeCommand (index);
         return;
     }
-    else if (cm == MODE_PRESET)
+    else if (cm == MODE_DEVICE_PRESETS)
     {
         var cd = this.model.getCursorDevice ();
         switch (index)
@@ -243,7 +244,7 @@ ControlView.prototype.onButtonRow2 = function (index, event)
             
         // Browse
         case 4:
-            this.surface.setPendingMode (MODE_PRESET);
+            this.surface.setPendingMode (MODE_DEVICE_PRESETS);
             break;
             
         // Dis-/Enable device
@@ -343,32 +344,12 @@ ControlView.prototype.onKnobRow1 = function (index, value)
     var cd = this.model.getCursorDevice ();
     
     var cm = this.surface.getCurrentMode ();
-    if (cm < MODE_BANK_DEVICE || cm > MODE_BANK_MACRO)
+    if (cm < MODE_DEVICE_PARAMS || cm > MODE_DEVICE_DIRECT)
     {
-        this.surface.setPendingMode (MODE_BANK_DEVICE);
-        cm = MODE_BANK_DEVICE;
+        this.surface.setPendingMode (MODE_DEVICE_PARAMS);
+        cm = MODE_DEVICE_PARAMS;
     }
-    
-    var mode = this.surface.getMode (cm);
-    switch (cm)
-    {
-        case MODE_BANK_DEVICE:
-            var param = cd.getFXParam (index);
-            param.value = this.surface.changeValue (value, param.value);
-            cd.setParameter (index, param.value);
-            break;
-            
-        case MODE_BANK_MODULATE:
-            if ((value <= 64 && !mode.params[index].value) ||
-                (value > 64 && mode.params[index].value))
-                mode.getParameter (index).toggleIsMapping ();
-            break;
-    
-        default:
-            mode.params[index].value = this.surface.changeValue (value, mode.params[index].value);
-            mode.getParameter (index).set (mode.params[index].value, Config.maxParameterValue);
-            break;
-    }
+    this.surface.getMode (cm).onValueKnob (index, value);
 };
 
 ControlView.prototype.onKnobRow2 = function (index, value)
@@ -440,13 +421,28 @@ ControlView.prototype.onButtonRow1Select = function ()
 ControlView.prototype.onKnobRow1Select = function ()
 {
     var cm = this.surface.getCurrentMode ();
-    if (cm >= MODE_BANK_DEVICE && cm <= MODE_BANK_MACRO)
+    switch (cm)
     {
-        this.lastDeviceMode++;
-        if (this.lastDeviceMode > MODE_BANK_MACRO)
-            this.lastDeviceMode = MODE_BANK_DEVICE;
+        case MODE_DEVICE_DIRECT:
+            this.currentDeviceMode = MODE_DEVICE_PARAMS;
+            displayNotification ("Device Parameters");
+            break;
+            
+        case MODE_DEVICE_COMMON:
+        case MODE_DEVICE_ENVELOPE:
+        case MODE_DEVICE_MODULATE:
+        case MODE_DEVICE_USER:
+        case MODE_DEVICE_MACRO:
+            this.currentDeviceMode = MODE_DEVICE_DIRECT;
+            displayNotification ("Direct Parameters");
+            break;
+        
+        case MODE_DEVICE_PARAMS:
+            this.currentDeviceMode = MODE_DEVICE_COMMON;
+            displayNotification ("Fixed Parameters");
+            break;
     }
-    this.surface.setPendingMode (this.lastDeviceMode);
+    this.surface.setPendingMode (this.currentDeviceMode);
 };
 
 ControlView.prototype.onButtonRow2Select = function ()
@@ -459,24 +455,39 @@ ControlView.prototype.onButtonRow2Select = function ()
 
 ControlView.prototype.onKnobRow2Select = function ()
 {
-    var isTrackBank = this.model.currentTrackBank === this.model.trackBank;
-
     switch (this.surface.getCurrentMode ())
     {
         case MODE_MASTER:
             this.surface.setPendingMode (MODE_TRACK);
+            this.isMasterMode = false;
             break;
             
         case MODE_TRACK:
-            this.model.toggleCurrentTrackBank ();
-            if (!isTrackBank)
+            if (this.model.isEffectTrackBankActive ())
+            {
                 this.surface.setPendingMode (MODE_MASTER);
+                this.isMasterMode = true;
+            }
+            else
+                this.model.toggleCurrentTrackBank ();
             break;
             
         default:
-            this.surface.setPendingMode (MODE_TRACK);
+            this.surface.setPendingMode (this.isMasterMode ? MODE_MASTER : MODE_TRACK);
             break;
     }
+    
+    var tb = this.model.getCurrentTrackBank ();
+    var track = tb.getSelectedTrack ();
+    if (track == null)
+        tb.select (0);
+    
+    if (this.surface.getCurrentMode () == MODE_MASTER)
+        displayNotification ("Master");
+    else if (this.model.isEffectTrackBankActive ())
+        displayNotification ("Effects");
+    else
+        displayNotification ("Tracks");
 };
 
 ControlView.prototype.onDrumPadRowSelect = function ()
@@ -504,18 +515,18 @@ ControlView.prototype.onButtonP1 = function (isUp, event)
     if (!event.isDown ())
         return;
 
-    var device = this.model.getCursorDevice ();
+    var mode = this.surface.getActiveMode ();
+    if (!mode.nextPage)
+    {
+        this.currentDeviceMode = MODE_DEVICE_PARAMS;
+        this.sureface.setPendingMode (MODE_DEVICE_PARAMS);
+    }
+    
     if (isUp)
-    {
-        if (device.hasNextParameterPage ())
-            device.nextParameterPage ();
-    }
+        this.surface.getMode (this.currentDeviceMode).nextPage ();
     else
-    {
-        if (device.hasPreviousParameterPage ())
-            device.previousParameterPage ();
-    }
-    this.surface.setPendingMode (MODE_BANK_DEVICE);
+        this.surface.getMode (this.currentDeviceMode).previousPage ();
+    this.currentDeviceMode = this.surface.getCurrentMode ();
 };
 
 ControlView.prototype.onButtonP2 = function (isUp, event)
@@ -593,24 +604,40 @@ ControlView.prototype.onTouchpadY = function (value)
 
 ControlView.prototype.updateButtons = function ()
 {
-    var track = this.model.getCurrentTrackBank ().getSelectedTrack ();
+    var tb = this.model.getCurrentTrackBank ();
+    var track = tb.getSelectedTrack ();
+    var cd = this.model.getCursorDevice ();
+    var transport = this.model.getTransport ();
     var cm = this.surface.getCurrentMode ();
-    var hasTrack = track != null && cm != MODE_FRAME && cm != MODE_PRESET;
+    var overlayMode = cm == MODE_FRAME || cm == MODE_DEVICE_PRESETS;
+    var isFunctions = cm == MODE_FUNCTIONS;
+    var hasTrack = track != null && !overlayMode;
+    var clipLength = tb.getNewClipLength ();
 
+    // Button row 1: Clip length or functions
+    this.surface.setButton (MKII_BUTTON_ROW1_1, !isFunctions && clipLength == 0 ? MKII_BUTTON_STATE_ON : MKII_BUTTON_STATE_OFF);
+    this.surface.setButton (MKII_BUTTON_ROW1_2, !isFunctions && clipLength == 1 ? MKII_BUTTON_STATE_ON : MKII_BUTTON_STATE_OFF);
+    this.surface.setButton (MKII_BUTTON_ROW1_3, !isFunctions && clipLength == 2 ? MKII_BUTTON_STATE_ON : MKII_BUTTON_STATE_OFF);
+    this.surface.setButton (MKII_BUTTON_ROW1_4, !isFunctions && clipLength == 3 ? MKII_BUTTON_STATE_ON : MKII_BUTTON_STATE_OFF);
+    this.surface.setButton (MKII_BUTTON_ROW1_5, !isFunctions && clipLength == 4 ? MKII_BUTTON_STATE_ON : MKII_BUTTON_STATE_OFF);
+    this.surface.setButton (MKII_BUTTON_ROW1_6, !isFunctions && clipLength == 5 ? MKII_BUTTON_STATE_ON : MKII_BUTTON_STATE_OFF);
+    this.surface.setButton (MKII_BUTTON_ROW1_7, (isFunctions && transport.isClickOn) || (!isFunctions && clipLength == 6) ? MKII_BUTTON_STATE_ON : MKII_BUTTON_STATE_OFF);
+    this.surface.setButton (MKII_BUTTON_ROW1_8, !isFunctions && clipLength == 7 ? MKII_BUTTON_STATE_ON : MKII_BUTTON_STATE_OFF);
+    
     // Button row 2: Track toggles
     this.surface.setButton (MKII_BUTTON_ROW2_1, hasTrack && track.mute ? MKII_BUTTON_STATE_ON : MKII_BUTTON_STATE_OFF);
     this.surface.setButton (MKII_BUTTON_ROW2_2, hasTrack && track.solo ? MKII_BUTTON_STATE_ON : MKII_BUTTON_STATE_OFF);
     this.surface.setButton (MKII_BUTTON_ROW2_3, hasTrack && track.recarm ? MKII_BUTTON_STATE_ON : MKII_BUTTON_STATE_OFF);
-    this.surface.setButton (MKII_BUTTON_ROW2_4, this.model.getTransport ().isWritingArrangerAutomation ? MKII_BUTTON_STATE_ON : MKII_BUTTON_STATE_OFF);
+    this.surface.setButton (MKII_BUTTON_ROW2_4, transport.isWritingArrangerAutomation ? MKII_BUTTON_STATE_ON : MKII_BUTTON_STATE_OFF);
     this.surface.setButton (MKII_BUTTON_ROW2_5, MKII_BUTTON_STATE_OFF);
-    this.surface.setButton (MKII_BUTTON_ROW2_6, MKII_BUTTON_STATE_OFF);
-    this.surface.setButton (MKII_BUTTON_ROW2_7, MKII_BUTTON_STATE_OFF);
-    this.surface.setButton (MKII_BUTTON_ROW2_8, MKII_BUTTON_STATE_OFF);
+    this.surface.setButton (MKII_BUTTON_ROW2_6, this.model.getSelectedDevice ().enabled ? MKII_BUTTON_STATE_ON : MKII_BUTTON_STATE_OFF);
+    this.surface.setButton (MKII_BUTTON_ROW2_7, !overlayMode && cd.canSelectPreviousFX () ? MKII_BUTTON_STATE_ON : MKII_BUTTON_STATE_OFF);
+    this.surface.setButton (MKII_BUTTON_ROW2_8, !overlayMode && cd.canSelectNextFX () ? MKII_BUTTON_STATE_ON : MKII_BUTTON_STATE_OFF);
 
     // Button row 3: Selected track indication
     for (var i = 0; i < 8; i++)
-        this.surface.setButton (MKII_BUTTON_ROW3_1 + i, this.model.getCurrentTrackBank ().getTrack (i).selected ? MKII_BUTTON_STATE_ON : MKII_BUTTON_STATE_OFF);
+        this.surface.setButton (MKII_BUTTON_ROW3_1 + i, tb.getTrack (i).selected ? MKII_BUTTON_STATE_ON : MKII_BUTTON_STATE_OFF);
         
     // LED indications for device parameters
-    this.surface.getMode (this.lastDeviceMode).setLEDs ();
+    this.surface.getMode (this.currentDeviceMode).setLEDs ();
 };
