@@ -460,16 +460,23 @@ ControlView.prototype.onKnobRow2Select = function ()
         case MODE_MASTER:
             this.surface.setPendingMode (MODE_TRACK);
             this.isMasterMode = false;
+            if (this.model.isEffectTrackBankActive ())
+                this.model.toggleCurrentTrackBank ();
+            displayNotification ("Tracks");
             break;
             
         case MODE_TRACK:
             if (this.model.isEffectTrackBankActive ())
             {
                 this.surface.setPendingMode (MODE_MASTER);
+                displayNotification ("Master");
                 this.isMasterMode = true;
             }
             else
+            {
                 this.model.toggleCurrentTrackBank ();
+                displayNotification ("Effects");
+            }
             break;
             
         default:
@@ -481,13 +488,6 @@ ControlView.prototype.onKnobRow2Select = function ()
     var track = tb.getSelectedTrack ();
     if (track == null)
         tb.select (0);
-    
-    if (this.surface.getCurrentMode () == MODE_MASTER)
-        displayNotification ("Master");
-    else if (this.model.isEffectTrackBankActive ())
-        displayNotification ("Effects");
-    else
-        displayNotification ("Tracks");
 };
 
 ControlView.prototype.onDrumPadRowSelect = function ()
@@ -519,7 +519,7 @@ ControlView.prototype.onButtonP1 = function (isUp, event)
     if (!mode.nextPage)
     {
         this.currentDeviceMode = MODE_DEVICE_PARAMS;
-        this.sureface.setPendingMode (MODE_DEVICE_PARAMS);
+        this.surface.setPendingMode (MODE_DEVICE_PARAMS);
     }
     
     if (isUp)

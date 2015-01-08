@@ -54,11 +54,10 @@ function Controller ()
 
     this.surface.addView (VIEW_CONTROL, new ControlView (this.model));
     
+    // Initialise 2nd display
+    this.surface.getMode (MODE_VOLUME).updateDisplay ();
+
     this.surface.setActiveView (VIEW_CONTROL);
-    
-    // Initialise all modes
-    this.surface.setActiveMode (MODE_VOLUME);
-    this.surface.setActiveMode (MODE_DEVICE_PARAMS);
     this.surface.setActiveMode (MODE_TRACK);
 }
 Controller.prototype = new AbstractController ();
