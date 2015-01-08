@@ -14,7 +14,7 @@ load ("Controller.js");
 // This is the only global variable, do not use it.
 var controller = null;
 
-host.defineController ("Novation", "SLMkII", "1.3", "D1CEE920-1E51-11E4-8C21-0800200C9A66", "Jürgen Moßgraber");
+host.defineController ("Novation", "SLMkII", "1.31", "D1CEE920-1E51-11E4-8C21-0800200C9A66", "Jürgen Moßgraber");
 host.defineMidiPorts (2, 1);
 
 host.platformIsWindows () && host.addDeviceNameBasedDiscoveryPair (["MIDIIN2 (SL MkII)", "SL MkII"], ["MIDIOUT2 (SL MkII)"]);

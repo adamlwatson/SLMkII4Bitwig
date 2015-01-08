@@ -515,18 +515,36 @@ ControlView.prototype.onButtonP1 = function (isUp, event)
     if (!event.isDown ())
         return;
 
-    var mode = this.surface.getActiveMode ();
-    if (!mode.nextPage)
+    switch (this.surface.getCurrentMode ())
     {
-        this.currentDeviceMode = MODE_DEVICE_PARAMS;
-        this.surface.setPendingMode (MODE_DEVICE_PARAMS);
+        case MODE_FUNCTIONS:
+        case MODE_FIXED:
+            this.onButtonRow1Select ();
+            break;
+        
+        case MODE_VOLUME:
+        case MODE_SELECT:
+            this.onButtonP2 (isUp, event);
+            break;
+        
+        case MODE_TRACK:
+        case MODE_MASTER:
+            this.onKnobRow2Select ();
+            break;
+        
+        case MODE_TRACK_TOGGLES:
+        case MODE_FRAME:
+            this.onButtonRow2Select ();
+            break;
+
+        default:
+            if (isUp)
+                this.surface.getMode (this.currentDeviceMode).nextPage ();
+            else
+                this.surface.getMode (this.currentDeviceMode).previousPage ();
+            this.currentDeviceMode = this.surface.getCurrentMode ();
+            break;
     }
-    
-    if (isUp)
-        this.surface.getMode (this.currentDeviceMode).nextPage ();
-    else
-        this.surface.getMode (this.currentDeviceMode).previousPage ();
-    this.currentDeviceMode = this.surface.getCurrentMode ();
 };
 
 ControlView.prototype.onButtonP2 = function (isUp, event)
@@ -547,7 +565,6 @@ ControlView.prototype.onButtonP2 = function (isUp, event)
             return;
         tb.scrollTracksPageUp ();
     }
-    this.surface.setPendingMode (this.surface.getPreviousMode ());
     tb.select (0);
 };
 

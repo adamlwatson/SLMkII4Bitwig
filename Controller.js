@@ -53,7 +53,7 @@ function Controller ()
     }));
 
     this.surface.addView (VIEW_CONTROL, new ControlView (this.model));
-    
+
     // Initialise 2nd display
     this.surface.getMode (MODE_VOLUME).updateDisplay ();
 
