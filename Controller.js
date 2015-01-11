@@ -12,7 +12,8 @@ function Controller ()
     this.keysInput.init ();
     this.keysNoteInput = this.keysInput.createNoteInput ();
 
-    this.model = new Model (0);
+    this.scales = new Scales (36, 52, 8, 2);
+    this.model = new Model (0, this.scales);
     this.model.getTrackBank ().addTrackSelectionListener (doObject (this, function (index, isSelected)
     {
         if (isSelected && this.surface.isActiveMode (MODE_MASTER))
@@ -29,12 +30,12 @@ function Controller ()
     this.surface.addMode (MODE_TRACK, new TrackMode (this.model));
     var volumeMode = new VolumeMode (this.model);
     this.surface.addMode (MODE_VOLUME, volumeMode);
-    this.surface.addMode (MODE_SELECT, volumeMode);
     this.surface.addMode (MODE_TRACK_TOGGLES, new TrackTogglesMode (this.model));
     this.surface.addMode (MODE_FUNCTIONS, new FunctionMode (this.model));
     this.surface.addMode (MODE_FIXED, new FixedMode (this.model));
     this.surface.addMode (MODE_MASTER, new MasterMode (this.model));
     this.surface.addMode (MODE_FRAME, new FrameMode (this.model));
+    this.surface.addMode (MODE_VIEW_SELECT, new ViewSelectMode (this.model));
     
     this.surface.addMode (MODE_DEVICE_PARAMS, new DeviceParamsMode (this.model));
     this.surface.addMode (MODE_DEVICE_COMMON, new DeviceCommonMode (this.model));
@@ -45,7 +46,9 @@ function Controller ()
     this.surface.addMode (MODE_DEVICE_DIRECT, new DeviceDirectMode (this.model, MODE_DEVICE_DIRECT, 'Direct'));
     this.surface.addMode (MODE_DEVICE_PRESETS, new DevicePresetsMode (this.model));
     
-
+    this.surface.addMode (MODE_SESSION, new SessionMode (this.model));
+    this.surface.addMode (MODE_PLAY_OPTIONS, new PlayOptionsMode (this.model));
+    
     this.surface.addModeListener (doObject (this, function (oldMode, newMode)
     {
         this.updateMode (-1);
@@ -53,6 +56,7 @@ function Controller ()
     }));
 
     this.surface.addView (VIEW_CONTROL, new ControlView (this.model));
+    this.surface.addView (VIEW_PLAY, new PlayView (this.model));
 
     // Initialise 2nd display
     this.surface.getMode (MODE_VOLUME).updateDisplay ();
@@ -62,39 +66,12 @@ function Controller ()
 }
 Controller.prototype = new AbstractController ();
 
-Controller.prototype.flush = function ()
-{
-    AbstractController.prototype.flush.call (this);
-
-    // Transport buttons
-    var t = this.model.getTransport ();
-    this.surface.setButton (MKII_BUTTON_ROW4_3, this.surface.isTransportActive && !t.isPlaying ? MKII_BUTTON_STATE_ON : MKII_BUTTON_STATE_OFF);
-    this.surface.setButton (MKII_BUTTON_ROW4_4, this.surface.isTransportActive && t.isPlaying ? MKII_BUTTON_STATE_ON : MKII_BUTTON_STATE_OFF);
-    this.surface.setButton (MKII_BUTTON_ROW4_5, this.surface.isTransportActive && t.isLooping ? MKII_BUTTON_STATE_ON : MKII_BUTTON_STATE_OFF);
-    this.surface.setButton (MKII_BUTTON_ROW4_6, this.surface.isTransportActive && t.isRecording ? MKII_BUTTON_STATE_ON : MKII_BUTTON_STATE_OFF);
-};
-
 Controller.prototype.updateMode = function (mode)
 {
-    var isTrack        = mode == MODE_TRACK;
-    var isTrackToggles = mode == MODE_TRACK_TOGGLES;
-    var isVolume       = mode == MODE_VOLUME;
-    var isSelect       = mode == MODE_SELECT;
-    var isFunctions    = mode == MODE_FUNCTIONS;
-    var isMaster       = mode == MODE_MASTER;
-    var isFixed        = mode == MODE_FIXED;
-    var isFrame        = mode == MODE_FRAME;
-    var isPreset       = mode == MODE_DEVICE_PRESETS;
-    var isDevice       = mode >= MODE_DEVICE_PARAMS && mode <= MODE_DEVICE_DIRECT;
-
+    if (this.surface.isTransportActive && mode != -1 && mode != MODE_VIEW_SELECT)
+        this.surface.turnOffTransport ();
+    
     this.updateIndication (mode);
-
-    this.surface.setButton (MKII_BUTTON_ROWSEL1, isFunctions || isFixed ? MKII_BUTTON_STATE_ON : MKII_BUTTON_STATE_OFF);
-    this.surface.setButton (MKII_BUTTON_ROWSEL2, isDevice ? MKII_BUTTON_STATE_ON : MKII_BUTTON_STATE_OFF);
-    this.surface.setButton (MKII_BUTTON_ROWSEL3, isTrackToggles || isFrame || isPreset ? MKII_BUTTON_STATE_ON : MKII_BUTTON_STATE_OFF);
-    this.surface.setButton (MKII_BUTTON_ROWSEL4, isTrack || isMaster ? MKII_BUTTON_STATE_ON : MKII_BUTTON_STATE_OFF);
-    this.surface.setButton (MKII_BUTTON_ROWSEL6, isVolume ? MKII_BUTTON_STATE_ON : MKII_BUTTON_STATE_OFF);
-    this.surface.setButton (MKII_BUTTON_ROWSEL7, isSelect ? MKII_BUTTON_STATE_ON : MKII_BUTTON_STATE_OFF);
 };
 
 Controller.prototype.updateIndication = function (mode)
@@ -125,3 +102,16 @@ Controller.prototype.updateIndication = function (mode)
         uc.getControl (i).setIndication (mode == MODE_DEVICE_USER);
     }
 };
+
+Scales.DRUM_NOTE_END = 52;
+Scales.DRUM_MATRIX =
+[
+    0,   1,  2,  3,  4,  5,  6,  7,
+    8,   9, 10, 11, 12, 13, 14, 15,
+    -1, -1, -1, -1, -1, -1, -1, -1, 
+    -1, -1, -1, -1, -1, -1, -1, -1, 
+    -1, -1, -1, -1, -1, -1, -1, -1, 
+    -1, -1, -1, -1, -1, -1, -1, -1, 
+    -1, -1, -1, -1, -1, -1, -1, -1, 
+    -1, -1, -1, -1, -1, -1, -1, -1
+];

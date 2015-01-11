@@ -5,6 +5,7 @@
 function FrameMode (model)
 {
     AbstractMode.call (this, model);
+    this.isTemporary = false;
     this.bottomItems = [];
 }
 FrameMode.prototype = new AbstractMode ();

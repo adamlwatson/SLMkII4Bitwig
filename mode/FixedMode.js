@@ -7,6 +7,7 @@ FixedMode.CLIP_LENGTHS = [ '1 Beat', '2 Beats', '1 Bar', '2 Bars', '4 Bars', '8 
 function FixedMode (model)
 {
     AbstractMode.call (this, model);
+    this.isTemporary = false;
 }
 FixedMode.prototype = new AbstractMode ();
 

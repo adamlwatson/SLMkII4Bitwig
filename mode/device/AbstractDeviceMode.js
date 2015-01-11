@@ -54,10 +54,9 @@ AbstractDeviceMode.prototype.setLEDs = function ()
     for (var i = 0; i < 8; i++)
     {
         var value = hasDevice ? this.getParameterValues (i).value : 0;
-        // TODO
-        // if (this.id == MODE_BANK_MODULATE)
-        //    value = value ? 11 : 0;
-        //else
+        if (this.id == MODE_DEVICE_MODULATE)
+            value = value ? 127 : 0;
+        else
             value = Math.min (Math.round ((value * 11) / 127), 11);
         this.surface.output.sendCC (0x70 + i, value);
     }

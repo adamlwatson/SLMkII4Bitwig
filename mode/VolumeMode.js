@@ -5,6 +5,7 @@
 function VolumeMode (model)
 {
     AbstractMode.call (this, model);
+    this.isTemporary = false;
 }
 VolumeMode.prototype = new AbstractMode ();
 

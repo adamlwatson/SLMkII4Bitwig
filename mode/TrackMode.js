@@ -5,6 +5,7 @@
 function TrackMode (model)
 {
     AbstractMode.call (this, model);
+    this.isTemporary = false;
 }
 TrackMode.prototype = new AbstractMode ();
 

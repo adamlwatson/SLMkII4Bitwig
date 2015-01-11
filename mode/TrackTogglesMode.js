@@ -5,6 +5,7 @@
 function TrackTogglesMode (model)
 {
     AbstractMode.call (this, model);
+    this.isTemporary = false;
 }
 TrackTogglesMode.prototype = new AbstractMode ();
 

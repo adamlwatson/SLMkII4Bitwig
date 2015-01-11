@@ -5,6 +5,7 @@
 function FunctionMode (model)
 {
     AbstractMode.call (this, model);
+    this.isTemporary = false;
 }
 FunctionMode.prototype = new AbstractMode ();
 

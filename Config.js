@@ -16,14 +16,12 @@ Config.maxParameterValue = 128;
 // ------------------------------
 
 Config.TOUCHPAD_MODE = 0;
-// TODO "Preconfigured (like X/Y device)"
-Config.TOUCHPAD_OPTIONS = [ "select another option", "Crossfader", "User Control (CCs)", "Macro Parameter 1&2" ];
-Config.TOUCHPAD_MODE_PRECONFIGURED = Config.TOUCHPAD_OPTIONS[0];
-Config.TOUCHPAD_MODE_CROSSFADER    = Config.TOUCHPAD_OPTIONS[1];
-Config.TOUCHPAD_MODE_CCS           = Config.TOUCHPAD_OPTIONS[2];
-Config.TOUCHPAD_MODE_MACRO         = Config.TOUCHPAD_OPTIONS[3];
+Config.TOUCHPAD_OPTIONS = [ "Crossfader", "User Control (CCs)", "Macro Parameter 1&2" ];
+Config.TOUCHPAD_MODE_CROSSFADER    = Config.TOUCHPAD_OPTIONS[0];
+Config.TOUCHPAD_MODE_CCS           = Config.TOUCHPAD_OPTIONS[1];
+Config.TOUCHPAD_MODE_MACRO         = Config.TOUCHPAD_OPTIONS[2];
 
-Config.touchpadMode = 0;
+Config.touchpadMode = 2;
 
 
 Config.init = function ()
@@ -33,7 +31,7 @@ Config.init = function ()
     ///////////////////////////
     // Accent
 
-    Config.touchpadModeSetting = prefs.getEnumSetting ("Mode", "Touchpad", Config.TOUCHPAD_OPTIONS, Config.TOUCHPAD_OPTIONS[0]);
+    Config.touchpadModeSetting = prefs.getEnumSetting ("Mode", "Touchpad", Config.TOUCHPAD_OPTIONS, Config.TOUCHPAD_OPTIONS[2]);
     Config.touchpadModeSetting.addValueObserver (function (value)
     {
         Config.touchpadMode = value;

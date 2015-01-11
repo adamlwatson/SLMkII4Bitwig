@@ -61,7 +61,7 @@ var MKII_KNOB_ROW1_5      = 60;
 var MKII_KNOB_ROW1_6      = 61;
 var MKII_KNOB_ROW1_7      = 62;
 var MKII_KNOB_ROW1_8      = 63;
-var MKII_TOUCHPAD_X       = 68;
+var MKII_TOUCHPAD_X       = 68;     // This is also the crossfader on the Zero
 var MKII_TOUCHPAD_Y       = 69;
 var MKII_BUTTON_REWIND    = 72;
 var MKII_BUTTON_FORWARD   = 73;
@@ -78,10 +78,10 @@ var MKII_BUTTON_ROWSEL5   = 84;
 var MKII_BUTTON_ROWSEL6   = 85;
 var MKII_BUTTON_ROWSEL7   = 86;
 var MKII_BUTTON_ROWSEL8   = 87;
-var MKII_BUTTON_P1_UP     = 88;
-var MKII_BUTTON_P1_DOWN   = 89;
-var MKII_BUTTON_P2_UP     = 90;
-var MKII_BUTTON_P2_DOWN   = 91;
+var MKII_BUTTON_P1_UP     = 88;     // Page left on the Zero
+var MKII_BUTTON_P1_DOWN   = 89;     // Page right on the Zero
+var MKII_BUTTON_P2_UP     = 90;     // Preview + Page left on the Zero
+var MKII_BUTTON_P2_DOWN   = 91;     // Preview + Page right on the Zero
 
 
 var MKII_BUTTONS_ALL =
@@ -151,16 +151,15 @@ function SLMkII (output, input)
     for (var i = 36; i <= 43; i++)
         this.gridNotes.push (i);
     
+    this.buttonCCStates = initArray (-1, 128);
     this.display = new Display (output);
-    
-    this.isTransportActive = true;
     
     // Switch to Ableton Automap mode
     this.output.sendSysex (SLMkII.SYSEX_AUTOMAP_ON);
     this.turnOffAllLEDs ();
     
-    // Enable transport mode
-    this.output.sendCC (MKII_BUTTON_TRANSPORT, 1);
+    // Disable transport mode
+    this.turnOffTransport ();
 
     // Set LED continuous mode
     for (var i = 0; i < 8; i++)
@@ -170,7 +169,10 @@ SLMkII.prototype = new AbstractControlSurface ();
 
 SLMkII.prototype.setButton = function (button, state)
 {
+    if (this.buttonCCStates[button] == state)
+        return;
     this.output.sendCC (button, state);
+    this.buttonCCStates[button] = state;
 };
 
 SLMkII.prototype.shutdown = function ()
@@ -187,7 +189,7 @@ SLMkII.prototype.isSelectPressed = function ()
 
 SLMkII.prototype.isShiftPressed = function ()
 {
-    return false;
+    return this.isTransportActive;
 };
 
 // Note: Weird to send to the DAW via SLMkII...
@@ -362,6 +364,10 @@ SLMkII.prototype.handleEvent = function (cc, value)
         case MKII_BUTTON_TRANSPORT:
             // Toggle transport
             this.isTransportActive = value > 0;
+            if (this.isTransportActive)
+                this.setPendingMode (MODE_VIEW_SELECT);
+            else
+                this.restoreMode ();
             break;
     
         case MKII_BUTTON_REWIND:
@@ -417,4 +423,12 @@ SLMkII.prototype.handleEvent = function (cc, value)
 SLMkII.prototype.turnOffAllLEDs = function ()
 {
     this.output.sendCC (78, 127);
+    for (var i = 0; i < 128; i++)
+        this.buttonCCStates[i] = -1;
+};
+
+SLMkII.prototype.turnOffTransport = function ()
+{
+    this.isTransportActive = false;
+    this.output.sendCC (MKII_BUTTON_TRANSPORT, 0);
 };

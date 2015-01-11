@@ -7,6 +7,7 @@ MasterMode.PARAM_NAMES = 'Volume   Pan                                          
 function MasterMode (model)
 {
     AbstractMode.call (this, model);
+    this.isTemporary = false;
 }
 MasterMode.prototype = new AbstractMode ();
 
