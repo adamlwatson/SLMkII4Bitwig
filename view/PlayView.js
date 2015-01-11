@@ -93,15 +93,21 @@ PlayView.prototype.onButtonRow2 = function (index, event)
             break;
             
         case 2:
+            this.changeResolution (0);
+            displayNotification (this.resolutionNames[this.selectedIndex]);
             break;
             
         case 3:
+            this.changeResolution (127);
+            displayNotification (this.resolutionNames[this.selectedIndex]);
             break;
             
         case 4:
+            this.changeScrollPosition (0);
             break;
             
         case 5:
+            this.changeScrollPosition (127);
             break;
             
         case 6:
