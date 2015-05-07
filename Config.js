@@ -15,13 +15,16 @@ Config.maxParameterValue = 128;
 // Editable configurations
 // ------------------------------
 
-Config.TOUCHPAD_MODE = 0;
+Config.TOUCHPAD_MODE      = 0;
+Config.DISPLAY_CROSSFADER = 1;
+
 Config.TOUCHPAD_OPTIONS = [ "Crossfader", "User Control (CCs)", "Macro Parameter 1&2" ];
 Config.TOUCHPAD_MODE_CROSSFADER    = Config.TOUCHPAD_OPTIONS[0];
 Config.TOUCHPAD_MODE_CCS           = Config.TOUCHPAD_OPTIONS[1];
 Config.TOUCHPAD_MODE_MACRO         = Config.TOUCHPAD_OPTIONS[2];
 
-Config.touchpadMode = 2;
+Config.touchpadMode      = 2;
+Config.displayCrossfader = true;
 
 
 Config.init = function ()
@@ -37,15 +40,29 @@ Config.init = function ()
         Config.touchpadMode = value;
         Config.notifyListeners (Config.TOUCHPAD_MODE);
     });
+    
+    ///////////////////////////
+    // Workflow
+
+    Config.displayCrossfaderSetting = prefs.getEnumSetting ("Display Crossfader on Track", "Workflow", [ "Off", "On" ], "On");
+    Config.displayCrossfaderSetting.addValueObserver (function (value)
+    {
+        Config.displayCrossfader = value == "On";
+        Config.notifyListeners (Config.DISPLAY_CROSSFADER);
+    });   
 };
 
+Config.setDisplayCrossfader = function (enabled)
+{
+    Config.displayCrossfaderSetting.set (enabled ? "On" : "Off");
+};
 
 // ------------------------------
 // Property listeners
 // ------------------------------
 
 Config.listeners = [];
-for (var i = 0; i <= Config.TOUCHPAD_MODE; i++)
+for (var i = 0; i <= Config.DISPLAY_CROSSFADER; i++)
     Config.listeners[i] = [];
 
 Config.addPropertyListener = function (property, listener)

@@ -13,9 +13,7 @@ TrackMode.prototype.updateDisplay = function ()
 {
     var currentTrackBank = this.model.getCurrentTrackBank ();
     var t = currentTrackBank.getSelectedTrack ();
-    var fxTrackBank = this.model.getEffectTrackBank ();
     var d = this.surface.getDisplay ();
-    var isFX = currentTrackBank === fxTrackBank;
     
     if (t == null)
     {
@@ -27,20 +25,43 @@ TrackMode.prototype.updateDisplay = function ()
         d.setCell (0, 0, "Volume", Display.FORMAT_RAW)
          .setCell (2, 0, t.volumeStr, Display.FORMAT_RAW)
          .setCell (0, 1, "Pan", Display.FORMAT_RAW)
-         .setCell (2, 1, t.panStr, Display.FORMAT_RAW)
-         .setCell (0, 2, "Crossfdr", Display.FORMAT_RAW)
-         .setCell (2, 2, t.crossfadeMode == 'A' ? 'A' : (t.crossfadeMode == 'B' ? '       B' : '   <> '), Display.FORMAT_RAW);
-
-        for (var i = 0; i < 5; i++)
+         .setCell (2, 1, t.panStr, Display.FORMAT_RAW);
+         
+        var sendStart = 2;
+        var sendCount = 5;
+        if (Config.displayCrossfader)
         {
-            var fxTrack = fxTrackBank.getTrack (i);
-            var isEmpty = isFX || !fxTrack.exists;
-            d.setCell (0, 3 + i, isEmpty ? "" : fxTrack.name, Display.FORMAT_RAW)
-             .setCell (2, 3 + i, t.sends[i] ? t.sends[i].volumeStr : "", Display.FORMAT_RAW);
+            sendStart = 3;
+            sendCount = 6;
+            d.setCell (0, 2, "Crossfdr", Display.FORMAT_RAW)
+             .setCell (2, 2, t.crossfadeMode == 'A' ? 'A' : (t.crossfadeMode == 'B' ? '       B' : '   <> '), Display.FORMAT_RAW);
         }
+
+        var fxTrackBank = this.model.getEffectTrackBank ();
+        if (fxTrackBank != null)
+        {
+            var isFX = currentTrackBank === fxTrackBank;
+            for (var i = 0; i < sendCount; i++)
+            {
+                var fxTrack = fxTrackBank.getTrack (i);
+                var isEmpty = isFX || !fxTrack.exists;
+                var pos = sendStart + i;
+                d.setCell (0, pos, isEmpty ? "" : fxTrack.name, Display.FORMAT_RAW)
+                 .setCell (2, pos, isEmpty ? "" : t.sends[i].volumeStr, Display.FORMAT_RAW);
+            }
         
-        if (isFX)
-            d.setCell (0, 7, t.name, Display.FORMAT_RAW);
+            if (isFX)
+                d.setCell (0, 7, t.name, Display.FORMAT_RAW);
+        }
+        else
+        {
+            for (var i = 0; i < sendCount; i++)
+            {
+                var pos = sendStart + i;
+                d.setCell (0, pos, t.sends[i].name, Display.FORMAT_RAW)
+                 .setCell (2, pos, t.sends[i].volumeStr, Display.FORMAT_RAW)
+            }
+        }
         d.done (0).done (2);
     }
 };

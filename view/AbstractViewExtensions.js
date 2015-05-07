@@ -145,12 +145,15 @@ AbstractView.prototype.onKnobRow2 = function (index, value)
             break;
             
         case 2:
-            tb.setCrossfadeModeAsNumber (track.index, value == 0 ? 0 : (value == 127 ? 2 : 1));
+            if (Config.displayCrossfader)
+                tb.setCrossfadeModeAsNumber (track.index, value == 0 ? 0 : (value == 127 ? 2 : 1));
+            else
+                tb.setSend (track.index, 0, value);
             break;
             
         // Send 1 - 5
         default:
-            tb.setSend (track.index, index - 3, value);
+            tb.setSend (track.index, index - (Config.displayCrossfader ? 3 : 2), value);
             break;
     }
 };
