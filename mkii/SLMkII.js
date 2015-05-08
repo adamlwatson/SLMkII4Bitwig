@@ -148,7 +148,8 @@ function SLMkII (output, input)
 {
     AbstractControlSurface.call (this, output, input, MKII_BUTTONS_ALL);
 
-    for (var i = 36; i <= 43; i++)
+    var i = 0;
+    for (i = 36; i <= 43; i++)
         this.gridNotes.push (i);
     
     this.buttonCCStates = initArray (-1, 128);
@@ -162,7 +163,7 @@ function SLMkII (output, input)
     this.turnOffTransport ();
 
     // Set LED continuous mode
-    for (var i = 0; i < 8; i++)
+    for (i = 0; i < 8; i++)
         this.output.sendCC (0x78 + i, 0);
 }
 SLMkII.prototype = new AbstractControlSurface ();

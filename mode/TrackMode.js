@@ -28,11 +28,11 @@ TrackMode.prototype.updateDisplay = function ()
          .setCell (2, 1, t.panStr, Display.FORMAT_RAW);
          
         var sendStart = 2;
-        var sendCount = 5;
+        var sendCount = 6;
         if (Config.displayCrossfader)
         {
             sendStart = 3;
-            sendCount = 6;
+            sendCount = 5;
             d.setCell (0, 2, "Crossfdr", Display.FORMAT_RAW)
              .setCell (2, 2, t.crossfadeMode == 'A' ? 'A' : (t.crossfadeMode == 'B' ? '       B' : '   <> '), Display.FORMAT_RAW);
         }
@@ -59,7 +59,7 @@ TrackMode.prototype.updateDisplay = function ()
             {
                 var pos = sendStart + i;
                 d.setCell (0, pos, t.sends[i].name, Display.FORMAT_RAW)
-                 .setCell (2, pos, t.sends[i].volumeStr, Display.FORMAT_RAW)
+                 .setCell (2, pos, t.sends[i].volumeStr, Display.FORMAT_RAW);
             }
         }
         d.done (0).done (2);

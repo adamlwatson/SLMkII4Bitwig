@@ -98,7 +98,6 @@ AbstractView.prototype.onKnobRow1 = function (index, value)
         return;
     if (value > 64) // Convert negative relative value
         value = 127 - (value - 64);
-    var cd = this.model.getCursorDevice ();
     
     var cm = this.surface.getCurrentMode ();
     if (cm < MODE_DEVICE_PARAMS || cm > MODE_DEVICE_DIRECT)
