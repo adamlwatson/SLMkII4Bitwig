@@ -6,21 +6,21 @@ loadAPI (1);
 
 load ("Config.js");
 load ("framework/ClassLoader.js");
-load ("mkii/ClassLoader.js");
+load ("mki/ClassLoader.js");
 load ("view/ClassLoader.js");
 load ("mode/ClassLoader.js");
 load ("Controller.js");
 
 // This is the only global variable, do not use it.
 var controller = null;
-var controller_type = "MKII"
+var controller_type = "MKI"
 
-host.defineController ("Novation", "SLMkII", "2.02", "D1CEE920-1E51-11E4-8C21-0800200C9A66", "Jürgen Moßgraber");
+host.defineController ("Novation", "SLMkI", "2.02", "a9041f50-0407-11e5-b939-0800200c9a66", "Jürgen Moßgraber");
 host.defineMidiPorts (2, 1);
 
-host.platformIsWindows () && host.addDeviceNameBasedDiscoveryPair (["MIDIIN2 (SL MkII)", "SL MkII"], ["MIDIOUT2 (SL MkII)"]);
-host.platformIsMac () && host.addDeviceNameBasedDiscoveryPair (["MIDIIN2 (SL MkII)", "SL MkII"], ["MIDIOUT2 (SL MkII)"]);
-host.platformIsLinux () && host.addDeviceNameBasedDiscoveryPair (["SL MkII MIDI 2", "SL MkII MIDI 1"], ["SL MkII MIDI 2"]);
+host.platformIsWindows () && host.addDeviceNameBasedDiscoveryPair (["ReMOTE SL Port 2", "ReMOTE SL Port 1"], ["ReMOTE SL Port 2"]);
+host.platformIsMac () && host.addDeviceNameBasedDiscoveryPair (["ReMOTE SL Port 2", "ReMOTE SL Port 1"], ["ReMOTE SL Port 2"]);
+host.platformIsLinux () && host.addDeviceNameBasedDiscoveryPair (["ReMOTE SL Port 2", "ReMOTE SL Port 1"], ["ReMOTE SL Port 2"]);
 
 function init ()
 {

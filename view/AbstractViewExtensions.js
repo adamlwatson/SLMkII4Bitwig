@@ -232,9 +232,14 @@ AbstractView.prototype.onKnobRow2Select = function ()
         tb.select (0);
 };
 
-AbstractView.prototype.onDrumPadRowSelect = function ()
+AbstractView.prototype.onDrumPadRowSelect = function ( value )
 {
-    // Not used
+    if ( controller_type == "MKI" ) {
+        this.surface.setPendingMode (MODE_VIEW_SELECT);
+    } else if ( controller_type == "MKII" ) {
+        // Not used
+    }
+
 };
 
 AbstractView.prototype.onSliderRowSelect = function ()
@@ -249,7 +254,13 @@ AbstractView.prototype.onButtonRow3Select = function ()
 
 AbstractView.prototype.onButtonRow4Select = function ()
 {
-    this.surface.setPendingMode (MODE_VOLUME);
+    if ( controller_type == "MKI" ) {
+        this.surface.setPendingMode (MODE_VIEW_SELECT);
+
+    } else if ( controller_type == "MKII" ) {
+        this.surface.setPendingMode (MODE_VOLUME);
+    }
+
 };
 
 AbstractView.prototype.onButtonP2 = function (isUp, event)

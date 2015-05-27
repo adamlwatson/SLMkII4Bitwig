@@ -104,7 +104,7 @@ ControlView.prototype.onButtonRow1 = function (index, event)
             this.model.getTransport ().toggleClick ();
             break;
             
-        // Tap Tempo
+        // Tap Tempo on MKII
         case 7:
             this.model.getTransport ().tapTempo ();
             break;
@@ -250,6 +250,12 @@ ControlView.prototype.onButtonRow4 = function (index, event)
             break;
     }
 };
+
+// dedicated Tap Tempo and Tempo Data Input Knob on MKI
+ControlView.prototype.onTempoMKI = function ( value )
+{
+    this.model.getTransport().setTempo( value );
+}
 
 ControlView.prototype.doChangeTempo = function ()
 {
