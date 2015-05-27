@@ -13,7 +13,6 @@ load ("Controller.js");
 
 // This is the only global variable, do not use it.
 var controller = null;
-var controller_type = "MKI"
 
 host.defineController ("Novation", "SLMkI", "2.02", "a9041f50-0407-11e5-b939-0800200c9a66", "Jürgen Moßgraber");
 host.defineMidiPorts (2, 1);
@@ -24,8 +23,8 @@ host.platformIsLinux () && host.addDeviceNameBasedDiscoveryPair (["ReMOTE SL Por
 
 function init ()
 {
-    controller = new Controller ();
-    println ("Initialized.");
+    controller = new Controller ( Config.REMOTE_SL_MKI );
+    println ("Initialized " + Config.REMOTE_SL_MKI + ".");
 }
 
 function exit ()

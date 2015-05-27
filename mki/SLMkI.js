@@ -84,16 +84,27 @@ var MKII_BUTTON_P2_UP     = 90;     // Preview + Page left on the Zero
 var MKII_BUTTON_P2_DOWN   = 91;     // Preview + Page right on the Zero
 
 
-var MK_BUTTON_TAP_TEMPO         = 94;
+var MKI_BUTTON_TAP_TEMPO         = 94;
+var MKI_BUTTON_TAP_TEMPO_VALUE   = 95;
 
-var MK_BUTTON_TAP_TEMPO_VALUE   = 95;
+
+// with the enhanced template, the drumpads emit cc 101-108
+var ENH_DPAD_1         = 120;
+var ENH_DPAD_2         = 121;
+var ENH_DPAD_3         = 122;
+var ENH_DPAD_4         = 123;
+var ENH_DPAD_5         = 124;
+var ENH_DPAD_6         = 125;
+var ENH_DPAD_7         = 126;
+var ENH_DPAD_8         = 127;
+
 
 // the following is necessary to store the value of CC94
 // since it comprises part of the temp value
-var last_cc94_value             = 0
+var last_cc94_value        = 0
 
 
-var MKII_BUTTONS_ALL =
+var MKI_BUTTONS_ALL =
 [
     MKII_BUTTON_ROW1_1,
     MKII_BUTTON_ROW1_2,
@@ -145,28 +156,39 @@ var MKII_BUTTONS_ALL =
     MKII_BUTTON_P1_UP,
     MKII_BUTTON_P1_DOWN,
     MKII_BUTTON_P2_UP,
-    MKII_BUTTON_P2_DOWN
+    MKII_BUTTON_P2_DOWN,
+    
+    ENH_DPAD_1,
+    ENH_DPAD_2,
+    ENH_DPAD_3,
+    ENH_DPAD_4,
+    ENH_DPAD_5,
+    ENH_DPAD_6,
+    ENH_DPAD_7,
+    ENH_DPAD_8
 ];
 
 
-SLMkII.SYSEX_HEADER    = "F0 00 20 29 03 03 12 00 04 00 ";
-SLMkII.SYSEX_AUTOMAP_ON  = SLMkII.SYSEX_HEADER + "01 01 F7";
-SLMkII.SYSEX_AUTOMAP_OFF = SLMkII.SYSEX_HEADER + "01 00 F7";
+SLMkI.SYSEX_HEADER    = "F0 00 20 29 03 03 12 00 04 00 ";
+SLMkI.SYSEX_AUTOMAP_ON  = SLMkI.SYSEX_HEADER + "01 01 F7";
+SLMkI.SYSEX_AUTOMAP_OFF = SLMkI.SYSEX_HEADER + "01 00 F7";
 
 
-function SLMkII (output, input)
+function SLMkI (output, input)
 {
-    AbstractControlSurface.call (this, output, input, MKII_BUTTONS_ALL);
+    AbstractControlSurface.call (this, output, input, MKI_BUTTONS_ALL);
 
     var i = 0;
     for (i = 36; i <= 43; i++)
         this.gridNotes.push (i);
     
+    this.controller_type = Config.REMOTE_SL_MKI
+
     this.buttonCCStates = initArray (-1, 128);
     this.display = new Display (output);
     
     // Switch to Ableton Automap mode
-    this.output.sendSysex (SLMkII.SYSEX_AUTOMAP_ON);
+    this.output.sendSysex (SLMkI.SYSEX_AUTOMAP_ON);
     this.turnOffAllLEDs ();
     
     // Disable transport mode
@@ -176,9 +198,9 @@ function SLMkII (output, input)
     for (i = 0; i < 8; i++)
         this.output.sendCC (0x78 + i, 0);
 }
-SLMkII.prototype = new AbstractControlSurface ();
+SLMkI.prototype = new AbstractControlSurface ();
 
-SLMkII.prototype.setButton = function (button, state)
+SLMkI.prototype.setButton = function (button, state)
 {
     if (this.buttonCCStates[button] == state)
         return;
@@ -186,25 +208,25 @@ SLMkII.prototype.setButton = function (button, state)
     this.buttonCCStates[button] = state;
 };
 
-SLMkII.prototype.shutdown = function ()
+SLMkI.prototype.shutdown = function ()
 {
     this.display.clear ();
     this.turnOffAllLEDs ();
-    this.output.sendSysex (SLMkII.SYSEX_AUTOMAP_OFF);
+    this.output.sendSysex (SLMKI.SYSEX_AUTOMAP_OFF);
 };
 
-SLMkII.prototype.isSelectPressed = function ()
+SLMkI.prototype.isSelectPressed = function ()
 {
     return false;
 };
 
-SLMkII.prototype.isShiftPressed = function ()
+SLMkI.prototype.isShiftPressed = function ()
 {
     return this.isTransportActive;
 };
 
-// Note: Weird to send to the DAW via SLMkII...
-SLMkII.prototype.sendMidiEvent = function (status, data1, data2)
+// Note: Weird to send to the DAW via SLMKII...
+SLMkI.prototype.sendMidiEvent = function (status, data1, data2)
 {
     this.noteInput.sendRawMidiEvent (status, data1, data2);
 };
@@ -213,7 +235,7 @@ SLMkII.prototype.sendMidiEvent = function (status, data1, data2)
 // Handlers
 //--------------------------------------
 
-SLMkII.prototype.handleEvent = function (cc, value)
+SLMkI.prototype.handleEvent = function (cc, value)
 {
     var view = this.getActiveView ();
     if (view == null)
@@ -441,14 +463,14 @@ SLMkII.prototype.handleEvent = function (cc, value)
     }
 };
 
-SLMkII.prototype.turnOffAllLEDs = function ()
+SLMkI.prototype.turnOffAllLEDs = function ()
 {
     this.output.sendCC (78, 127);
     for (var i = 0; i < 128; i++)
         this.buttonCCStates[i] = -1;
 };
 
-SLMkII.prototype.turnOffTransport = function ()
+SLMkI.prototype.turnOffTransport = function ()
 {
     this.isTransportActive = false;
     this.output.sendCC (MKII_BUTTON_TRANSPORT, 0);

@@ -6,6 +6,10 @@
 // Static configurations
 // ------------------------------
 
+// remote sl model indicator
+Config.REMOTE_SL_MKI     = "MKI"
+Config.REMOTE_SL_MKII    = "MKII"
+
 // Inc/Dec of knobs
 Config.fractionValue     = 1;
 Config.fractionMinValue  = 0.5;

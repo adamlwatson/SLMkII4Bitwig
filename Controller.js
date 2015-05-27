@@ -2,13 +2,25 @@
 // (c) 2014
 // Licensed under LGPLv3 - http://www.gnu.org/licenses/lgpl-3.0.txt
 
-function Controller ()
+function Controller ( remote_sl_version )
 {
     Config.init ();
 
-    var output = new MidiOutput ();
-    var input = new MkIIMidiInput ();
-    this.keysInput = new MkIIMidiInputKeys ();
+
+    if ( remote_sl_version == Config.REMOTE_SL_MKI ) {
+        var output = new MidiOutput ();
+        var input = new MkIMidiInput ();
+        this.keysInput = new MkIMidiInputKeys ();
+        this.surface = new SLMkI (output, input);
+
+    } else if ( remote_sl_version == Config.REMOTE_SL_MKII ) {
+        var output = new MidiOutput ();
+        var input = new MkIIMidiInput ();
+        this.keysInput = new MkIIMidiInputKeys ();
+        this.surface = new SLMkII (output, input);
+
+    }
+
     this.keysInput.init ();
     this.keysNoteInput = this.keysInput.createNoteInput ();
 
@@ -24,7 +36,6 @@ function Controller ()
         this.surface.setPendingMode (isSelected ? MODE_MASTER : this.surface.getPreviousMode ());
     }));
     
-    this.surface = new SLMkII (output, input);
     this.surface.setDefaultMode (MODE_TRACK);
 
     this.surface.addMode (MODE_TRACK, new TrackMode (this.model));

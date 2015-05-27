@@ -152,6 +152,8 @@ function SLMkII (output, input)
     for (i = 36; i <= 43; i++)
         this.gridNotes.push (i);
     
+    this.controller_type = Config.REMOTE_SL_MKII
+    
     this.buttonCCStates = initArray (-1, 128);
     this.display = new Display (output);
     

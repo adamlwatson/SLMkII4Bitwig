@@ -4,6 +4,7 @@
 
 loadAPI (1);
 
+
 load ("Config.js");
 load ("framework/ClassLoader.js");
 load ("mkii/ClassLoader.js");
@@ -13,7 +14,6 @@ load ("Controller.js");
 
 // This is the only global variable, do not use it.
 var controller = null;
-var controller_type = "MKII"
 
 host.defineController ("Novation", "SLMkII", "2.02", "D1CEE920-1E51-11E4-8C21-0800200C9A66", "Jürgen Moßgraber");
 host.defineMidiPorts (2, 1);
@@ -24,8 +24,8 @@ host.platformIsLinux () && host.addDeviceNameBasedDiscoveryPair (["SL MkII MIDI 
 
 function init ()
 {
-    controller = new Controller ();
-    println ("Initialized.");
+    controller = new Controller ( Config.REMOTE_SL_MKII );
+    println ("Initialized " + Config.REMOTE_SL_MKII + ".");
 }
 
 function exit ()

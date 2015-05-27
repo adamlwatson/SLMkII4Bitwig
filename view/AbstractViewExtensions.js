@@ -234,9 +234,9 @@ AbstractView.prototype.onKnobRow2Select = function ()
 
 AbstractView.prototype.onDrumPadRowSelect = function ( value )
 {
-    if ( controller_type == "MKI" ) {
+    if ( this.surface.controller_type == Config.REMOTE_SL_MKI ) {
         this.surface.setPendingMode (MODE_VIEW_SELECT);
-    } else if ( controller_type == "MKII" ) {
+    } else if ( this.surface.controller_type == Config.REMOTE_SL_MKII ) {
         // Not used
     }
 
@@ -254,10 +254,10 @@ AbstractView.prototype.onButtonRow3Select = function ()
 
 AbstractView.prototype.onButtonRow4Select = function ()
 {
-    if ( controller_type == "MKI" ) {
+    if ( this.surface.controller_type == Config.REMOTE_SL_MKI ) {
         this.surface.setPendingMode (MODE_VIEW_SELECT);
 
-    } else if ( controller_type == "MKII" ) {
+    } else if ( this.surface.controller_type == Config.REMOTE_SL_MKII ) {
         this.surface.setPendingMode (MODE_VOLUME);
     }
 
