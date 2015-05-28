@@ -240,7 +240,24 @@ AbstractView.prototype.onDrumPadRowSelect = function ( value )
         // Not used
     }
 
+    // if ( this.surface.controller_type == Config.REMOTE_SL_MKI ) {
+    //     this.surface.setPendingMode (MODE_VIEW_SELECT);
+    // } else if ( this.surface.controller_type == Config.REMOTE_SL_MKII ) {
+    //     // Not used
+    // }
+
+    // var cm = this.surface.getCurrentMode ();
+    // if (cm != MODE_SESSION)
+    //     this.surface.setPendingMode (MODE_SESSION);
+
+    // toggle clip launcher
+        
 };
+
+AbstractView.prototype.onDrumPad = function ( index, event )
+{
+    this.model.getSceneBank().launchScene( index );
+}
 
 AbstractView.prototype.onSliderRowSelect = function ()
 {
