@@ -25,7 +25,7 @@ host.platformIsLinux () && host.addDeviceNameBasedDiscoveryPair (["SL MkII MIDI 
 function init ()
 {
     controller = new Controller ( Config.REMOTE_SL_MKII );
-    println ("Initialized " + Config.REMOTE_SL_MKII + ".");
+    println ("Initialized ReMOTE SL " + Config.REMOTE_SL_MKII + ".");
 }
 
 function exit ()

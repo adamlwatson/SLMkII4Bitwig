@@ -88,17 +88,6 @@ var MKI_BUTTON_TAP_TEMPO         = 94;
 var MKI_BUTTON_TAP_TEMPO_VALUE   = 95;
 
 
-// with the enhanced template, the drumpads emit cc 101-108
-var ENH_DPAD_1         = 120;
-var ENH_DPAD_2         = 121;
-var ENH_DPAD_3         = 122;
-var ENH_DPAD_4         = 123;
-var ENH_DPAD_5         = 124;
-var ENH_DPAD_6         = 125;
-var ENH_DPAD_7         = 126;
-var ENH_DPAD_8         = 127;
-
-
 // the following is necessary to store the value of CC94
 // since it comprises part of the temp value
 var last_cc94_value        = 0
@@ -156,16 +145,7 @@ var MKI_BUTTONS_ALL =
     MKII_BUTTON_P1_UP,
     MKII_BUTTON_P1_DOWN,
     MKII_BUTTON_P2_UP,
-    MKII_BUTTON_P2_DOWN,
-    
-    ENH_DPAD_1,
-    ENH_DPAD_2,
-    ENH_DPAD_3,
-    ENH_DPAD_4,
-    ENH_DPAD_5,
-    ENH_DPAD_6,
-    ENH_DPAD_7,
-    ENH_DPAD_8
+    MKII_BUTTON_P2_DOWN
 ];
 
 
@@ -212,7 +192,7 @@ SLMkI.prototype.shutdown = function ()
 {
     this.display.clear ();
     this.turnOffAllLEDs ();
-    this.output.sendSysex (SLMKI.SYSEX_AUTOMAP_OFF);
+    this.output.sendSysex (SLMkI.SYSEX_AUTOMAP_OFF);
 };
 
 SLMkI.prototype.isSelectPressed = function ()
@@ -237,6 +217,7 @@ SLMkI.prototype.sendMidiEvent = function (status, data1, data2)
 
 SLMkI.prototype.handleEvent = function (cc, value)
 {
+
     var view = this.getActiveView ();
     if (view == null)
         return;
@@ -394,11 +375,11 @@ SLMkI.prototype.handleEvent = function (cc, value)
         // Tap Tempo
         //////////////////////////
 
-        case MK_BUTTON_TAP_TEMPO:
+        case MKI_BUTTON_TAP_TEMPO:
             last_cc94_value = value;
             break;
 
-        case MK_BUTTON_TAP_TEMPO_VALUE:
+        case MKI_BUTTON_TAP_TEMPO_VALUE:
             iter = last_cc94_value;
             tempo = 0
             while ( iter > 0 ) {
@@ -461,6 +442,7 @@ SLMkI.prototype.handleEvent = function (cc, value)
             println ("Unused Midi CC: " + cc);
             break;
     }
+
 };
 
 SLMkI.prototype.turnOffAllLEDs = function ()
